@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ubc-GroUP Building Block" default="deploy-b2" basedir=".">
+    <description>TODO Description For My Project</description>
+
+    <property name="build.dir" value="${basedir}/build/"/>
+    <property name="b2.package.name" value="${basedir}/build/ubc-GroUP"/>
+    <property name="src" value="${basedir}/src"/>
+    <property name="web" value="${basedir}/WebContent"/>
+    <property name="classdir" value="${basedir}/bin"/>
+
+    <target name="build" >
+        <javac srcdir="${src}" destdir="${classdir}" debug="true" includes="**/*.java" />
+    </target>
+
+    <target name="deploy-b2" depends="package-war">
+        <taskdef name="b2deploy" classpath="${basedir}/lib/b2deploy-task.jar" classname="org.oscelot.ant.B2DeployTask" />
+        <b2deploy localfilepath="${build.dir}/${b2.package.name}.war" host="127.0.0.1" courseorgavailable="true" clean="true" />
+    </target>
+
+    <target name="package-war">
+        <war destfile="${b2.package.name}.war" basedir="WebContent">
+            <classes dir="bin"></classes>
+        </war>
+    </target>
+
+
+    <target name="check-compatibility">
+        <taskdef name="fibbba" classname="com.blackboard.fibbba.CheckFibbbaTask" classpath="${basedir}/lib/fibbba-ant.jar" />
+        <fibbba srcfile="${b2.package.name}.war" email="pan.luo@ubc.ca"/>
+    </target>
+
+</project>
