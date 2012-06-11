@@ -6,17 +6,20 @@ import java.net.URL;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class Manager {
 	private Provider provider = null;
 	private Consumer consumer = null;
 	private HttpServletRequest request = null;
+	private HttpServletResponse response = null;
 
 	public Manager() {
 	}
 	
-	public Manager(HttpServletRequest request) {
+	public Manager(HttpServletRequest request, HttpServletResponse response) {
 		this.request = request;
+		this.response = response;
 		Class<?> p, c;
 		System.out.println("Using provider: " + getParam("provider"));
 		System.out.println("Using consumer: " + getParam("consumer"));
@@ -37,7 +40,9 @@ public class Manager {
 		}		
 		
 		provider.setRequest(request);
+		provider.setResponse(response);
 		consumer.setRequest(request);
+		consumer.setResponse(response);
 	}
 
 	public Provider getProvider() {
@@ -58,6 +63,10 @@ public class Manager {
 
 	public void setRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+	
+	public void setResponse(HttpServletResponse response) {
+		this.response = response;
 	}
 	
 	public String getParam(String name) {

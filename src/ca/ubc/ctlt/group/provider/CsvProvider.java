@@ -43,8 +43,8 @@ public class CsvProvider extends Provider {
 			String[] nextLine;
 			while ((nextLine = reader.readNext()) != null) {
 				if (nextLine[0].trim().isEmpty()) {
-					// use ##DEFAULT## for group set name for the file without group set
-					nextLine[0] = "##DEFAULT##";
+					// use GroupSet.EMPTY_NAME for group set name for the file without group set
+					nextLine[0] = GroupSet.EMPTY_NAME;
 				}
 				
 				GroupSet set = sets.get(nextLine[0].trim());

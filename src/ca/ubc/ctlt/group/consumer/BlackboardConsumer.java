@@ -87,7 +87,7 @@ public class BlackboardConsumer extends Consumer {
 			
 			log("Processing group set: " + set.getName());
 
-			if (!set.getName().equals("##DEFAULT##")) {
+			if (!set.getName().equals(GroupSet.EMPTY_NAME)) {
 				// find if the group set exists
 				for (Group s : bbGroupSets) {
 					if (s.getTitle().equals(set.getName())) {

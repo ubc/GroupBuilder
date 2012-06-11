@@ -5,18 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public abstract class ManagedObject {
 	public static String NAME;
 	public static String DESCRIPTION;
 	
 	protected HttpServletRequest request = null;
+	protected HttpServletResponse response = null;
 	protected HashMap<String, GroupSet> sets;
 	protected List<String> logs = new ArrayList<String>();
 	protected List<String> errors = new ArrayList<String>();
 
 	public void setRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+	
+	public void setResponse(HttpServletResponse response) {
+		this.response = response;
 	}
 	
 	public String getParam(String name) {

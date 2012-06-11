@@ -3,6 +3,7 @@ package ca.ubc.ctlt.group;
 import java.util.HashMap;
 
 public class GroupSet {
+	public static final String EMPTY_NAME = "##DEFAULT##";
 	private String name;
 	private String id;
 	private HashMap<String, Group> groups;

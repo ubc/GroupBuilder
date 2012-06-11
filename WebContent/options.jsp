@@ -21,7 +21,9 @@ Provider provider = (Provider)p.newInstance();
 Class c = Class.forName(request.getParameter("consumer"));
 Consumer consumer  = (Consumer)c.newInstance();
 provider.setRequest(request);
+provider.setResponse(response);
 consumer.setRequest(request);
+consumer.setResponse(response);
 %>
 
 <form action="process.jsp" method="post" ENCTYPE="multipart/form-data">

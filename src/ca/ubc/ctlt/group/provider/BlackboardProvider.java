@@ -51,7 +51,7 @@ public class BlackboardProvider extends Provider {
 		
 		sets = getSets(ctx.getCourseId());
 		List<Group> bbGroups = getAllBbGroups(ctx.getCourseId());
-		GroupSet defaultSet = new GroupSet("##DEFAULT##");
+		GroupSet defaultSet = new GroupSet(GroupSet.EMPTY_NAME);
 		
 		for(Group s: bbGroups) {
 			System.out.println("Processing bbGroup: " + s);
@@ -77,7 +77,7 @@ public class BlackboardProvider extends Provider {
 		}
 		
 		if (!defaultSet.getGroups().isEmpty()) {
-			sets.put("##DEFAULT##", defaultSet);
+			sets.put(GroupSet.EMPTY_NAME, defaultSet);
 		}
 		System.out.println(sets);
 		return sets;

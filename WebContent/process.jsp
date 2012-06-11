@@ -16,7 +16,7 @@
 	</bbNG:pageHeader>
 <%
 
-Manager manager = new Manager(request);
+Manager manager = new Manager(request, response);
 manager.process();
 %>
 
