@@ -37,9 +37,7 @@ public abstract class ManagedObject {
 		return errors;
 	}
 
-	public String renderOptions() {
-		return "";
-	}
+	public abstract String getOptionsPage();
 	
 	protected void log(String message) {
 		System.out.println(message);

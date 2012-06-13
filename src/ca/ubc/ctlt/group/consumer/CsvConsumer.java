@@ -53,4 +53,10 @@ public class CsvConsumer extends Consumer {
 		writer.close();
 	}
 
+	@Override
+	public String getOptionsPage()
+	{
+		return "consumers/csv/options.html";
+	}
+
 }

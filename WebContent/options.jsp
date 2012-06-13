@@ -24,6 +24,8 @@ provider.setRequest(request);
 provider.setResponse(response);
 consumer.setRequest(request);
 consumer.setResponse(response);
+pageContext.setAttribute("provider", provider);
+pageContext.setAttribute("consumer", consumer);
 %>
 
 <form action="process.jsp" method="post" ENCTYPE="multipart/form-data">
@@ -32,7 +34,7 @@ consumer.setResponse(response);
 <%=p.getField("DESCRIPTION").get(null) %>
 <hr>
 
-<%=provider.renderOptions()%>
+<jsp:include page="${provider.optionsPage}" flush="true" />
 
 <br /> <br />
 
@@ -40,7 +42,7 @@ consumer.setResponse(response);
 <%=c.getField("DESCRIPTION").get(null) %>
 <hr>
 
-<%=consumer.renderOptions()%>
+<jsp:include page="${consumer.optionsPage}" flush="true" />
 
 <input type="submit" value="Submit" />
 

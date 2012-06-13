@@ -25,12 +25,6 @@ public class CsvProvider extends Provider {
 		return null;
 	}
 
-	@Override
-	public String renderOptions() {
-		
-		return "<input type='file' name='csvfile'>";
-	}
-	
 	private boolean processFile() {
 		sets = new HashMap<String, GroupSet>();
 		
@@ -72,6 +66,12 @@ public class CsvProvider extends Provider {
 		}
 
 		return true;
+	}
+
+	@Override
+	public String getOptionsPage()
+	{
+		return "providers/csv/options.html";
 	}
 	
 }

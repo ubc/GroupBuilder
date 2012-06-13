@@ -179,4 +179,10 @@ public class BlackboardConsumer extends Consumer {
 			}
 		}
 	}
+
+	@Override
+	public String getOptionsPage()
+	{
+		return "consumers/blackboard/options.html";
+	}
 }
