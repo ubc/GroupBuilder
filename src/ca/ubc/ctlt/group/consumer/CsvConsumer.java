@@ -14,8 +14,6 @@ import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.User;
 
 public class CsvConsumer extends Consumer {
-	public static String NAME = "CSV";
-	public static String DESCRIPTION = "Exporting group to CSV file.";
 	
 	@Override
 	public void setGroupSets(HashMap<String, GroupSet> sets) throws Exception {
@@ -57,6 +55,18 @@ public class CsvConsumer extends Consumer {
 	public String getOptionsPage()
 	{
 		return "consumers/csv/options.html";
+	}
+
+	@Override
+	public String getName()
+	{
+		return "CSV";
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return "Exporting group to CSV file.";
 	}
 
 }

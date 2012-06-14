@@ -8,8 +8,6 @@ import au.com.bytecode.opencsv.CSVReader;
 import ca.ubc.ctlt.group.*;
 
 public class CsvProvider extends Provider {
-	public static String NAME = "CSV";
-	public static String DESCRIPTION = "Providing group information from CSV file.";
 	
 	@Override
 	public HashMap<String, GroupSet> getGroupSets() {
@@ -72,6 +70,18 @@ public class CsvProvider extends Provider {
 	public String getOptionsPage()
 	{
 		return "providers/csv/options.html";
+	}
+
+	@Override
+	public String getName()
+	{
+		return "CSV";
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return "Providing group information from CSV file.";
 	}
 	
 }

@@ -4,54 +4,45 @@
 
 <!-- Tag libraries -->
 <%@taglib prefix="bbNG" uri="/bbNG"%>
-<%@taglib prefix="bbUI" uri="/bbUI"%>
-<%@taglib prefix="bbData" uri="/bbData"%>
 
-<bbData:context id="ctx">
-	<bbNG:learningSystemPage ctxId="ctx">
+<bbNG:learningSystemPage ctxId="ctx">
 	
 	<bbNG:pageHeader instructions="Please follow the steps">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
 		title="GroUP"/>
 	</bbNG:pageHeader>
 	
-<%
-Class p = Class.forName(request.getParameter("provider"));
-Provider provider = (Provider)p.newInstance();
-Class c = Class.forName(request.getParameter("consumer"));
-Consumer consumer  = (Consumer)c.newInstance();
-provider.setRequest(request);
-provider.setResponse(response);
-consumer.setRequest(request);
-consumer.setResponse(response);
-pageContext.setAttribute("provider", provider);
-pageContext.setAttribute("consumer", consumer);
-%>
+	<%
+	Class p = Class.forName(request.getParameter("provider"));
+	Provider provider = (Provider)p.newInstance();
+	Class c = Class.forName(request.getParameter("consumer"));
+	Consumer consumer  = (Consumer)c.newInstance();
+	provider.setRequest(request);
+	provider.setResponse(response);
+	consumer.setRequest(request);
+	consumer.setResponse(response);
+	pageContext.setAttribute("provider", provider);
+	pageContext.setAttribute("consumer", consumer);
+	%>
 
-<form action="process.jsp" method="post" ENCTYPE="multipart/form-data">
-
-<%=p.getField("NAME").get(null)%> Provider Options <br />
-<%=p.getField("DESCRIPTION").get(null) %>
-<hr>
-
-<jsp:include page="${provider.optionsPage}" flush="true" />
-
-<br /> <br />
-
-<%=c.getField("NAME").get(null)%> Consumer Options <br />
-<%=c.getField("DESCRIPTION").get(null) %>
-<hr>
-
-<jsp:include page="${consumer.optionsPage}" flush="true" />
-
-<input type="submit" value="Submit" />
-
-<input type="hidden" name="provider" value="<%=p.getName()%>" />
-<input type="hidden" name="consumer" value="<%=c.getName()%>" />
-<input type="hidden" name="course_id" value=<%=request.getParameter("course_id")%> />
-
-</form>
-
-	</bbNG:learningSystemPage>
-
-</bbData:context>
+	<bbNG:form action="process.jsp" method="post">
+		<bbNG:dataCollection>
+		
+			<bbNG:step title="${provider.name} Provider - ${provider.description}">
+				<jsp:include page="${provider.optionsPage}" flush="true" />
+			</bbNG:step>
+			
+			<bbNG:step title="${consumer.name} Provider - ${consumer.description}">
+				<jsp:include page="${consumer.optionsPage}" flush="true" />
+			</bbNG:step>
+			
+			<input type="hidden" name="provider" value="${provider.class.name}" />
+			<input type="hidden" name="consumer" value="${consumer.class.name}" />
+			<input type="hidden" name="course_id" value=<%=request.getParameter("course_id")%> />
+			
+			<bbNG:stepSubmit/>
+		
+		</bbNG:dataCollection>
+	</bbNG:form>
+	
+</bbNG:learningSystemPage>

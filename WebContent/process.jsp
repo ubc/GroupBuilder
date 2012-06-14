@@ -4,18 +4,14 @@
 
 <!-- Tag libraries -->
 <%@taglib prefix="bbNG" uri="/bbNG"%>
-<%@taglib prefix="bbUI" uri="/bbUI"%>
-<%@taglib prefix="bbData" uri="/bbData"%>
 
-<bbData:context id="ctx">
-	<bbNG:learningSystemPage ctxId="ctx">
+<bbNG:learningSystemPage ctxId="ctx">
 	
 	<bbNG:pageHeader instructions="Please follow the steps">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
 		title="GroUP"/>
 	</bbNG:pageHeader>
 <%
-
 Manager manager = new Manager(request, response);
 manager.process();
 %>
@@ -26,6 +22,4 @@ Finished.
 <br />
 <%=manager.getErrors() %>
 
-	</bbNG:learningSystemPage>
-
-</bbData:context>
+</bbNG:learningSystemPage>

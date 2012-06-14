@@ -8,9 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public abstract class ManagedObject {
-	public static String NAME;
-	public static String DESCRIPTION;
-	
 	protected HttpServletRequest request = null;
 	protected HttpServletResponse response = null;
 	protected HashMap<String, GroupSet> sets;
@@ -48,4 +45,8 @@ public abstract class ManagedObject {
 		System.err.println(message);
 		errors.add(message);
 	}
+	
+	public abstract String getName();
+	
+	public abstract String getDescription();
 }

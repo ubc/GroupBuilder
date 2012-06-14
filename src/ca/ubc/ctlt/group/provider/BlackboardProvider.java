@@ -12,8 +12,6 @@ import ca.ubc.ctlt.group.Provider;
 import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
 
 public class BlackboardProvider extends Provider {
-	public static String NAME = "Blackboard";
-	public static String DESCRIPTION = "Providing group information from Blackboard Learn.";
 	
 	@Override
 	public HashMap<String, GroupSet> getGroupSets() throws Exception {
@@ -50,6 +48,20 @@ public class BlackboardProvider extends Provider {
 	public String getOptionsPage()
 	{
 		return "providers/blackboard/options.jsp";
+	}
+
+
+	@Override
+	public String getName()
+	{
+		return "Blackboard";
+	}
+
+
+	@Override
+	public String getDescription()
+	{
+		return "Providing group information from Blackboard Learn.";
 	}
 
 }

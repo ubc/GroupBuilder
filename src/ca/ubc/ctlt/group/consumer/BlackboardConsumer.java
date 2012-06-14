@@ -28,8 +28,6 @@ import ca.ubc.ctlt.group.Consumer;
 import ca.ubc.ctlt.group.GroupSet;
 
 public class BlackboardConsumer extends Consumer {
-	public static String NAME = "Blackboard";
-	public static String DESCRIPTION = "Creating group for Blackboard Learn.";
 	private BbPersistenceManager bbPm = PersistenceServiceFactory.getInstance()
 			.getDbPersistenceManager();
 
@@ -184,5 +182,17 @@ public class BlackboardConsumer extends Consumer {
 	public String getOptionsPage()
 	{
 		return "consumers/blackboard/options.html";
+	}
+
+	@Override
+	public String getName()
+	{
+		return "Blackboard";
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return "Creating group for Blackboard Learn.";
 	}
 }
