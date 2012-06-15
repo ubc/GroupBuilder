@@ -42,17 +42,13 @@
         out.print("</select>");
       %>
 	</bbNG:jspBlock>
-</li>
-<li>
-	<div class="label">
-		<label for="op">
-		Term
-		</label>
-	</div>
 	<bbNG:selectElement name="op" id="searchOp" isRequired="true">
 		<bbNG:selectOptionElement value="contains" optionLabel="Contains" />
 		<bbNG:selectOptionElement value="exactly" optionLabel="Exactly" />
 		<bbNG:selectOptionElement value="exclude" optionLabel="Exclude" />
+		<bbNG:selectOptionElement value="greater" optionLabel="Greater Than (numeric)" />
+		<bbNG:selectOptionElement value="equal" optionLabel="Equal (numeric)" />
+		<bbNG:selectOptionElement value="less" optionLabel="Less Than (numeric)" />
 	</bbNG:selectElement>
 	<bbNG:textElement name="term" id="searchTerm" isRequired="true" />
 </li>

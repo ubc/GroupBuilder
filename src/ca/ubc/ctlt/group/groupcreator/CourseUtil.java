@@ -81,6 +81,52 @@ public class CourseUtil
 					cmIdMatches.put(score.getCourseMembershipId(), score);
 				}
 			}
+			else if (op.equals("greater"))
+			{
+				try 
+				{
+					double right = Double.parseDouble(term);
+					double left = Double.parseDouble(score.getGrade());
+					if (left > right)
+					{
+						cmIdMatches.put(score.getCourseMembershipId(), score);
+					}
+				}
+				catch (NumberFormatException e)
+				{ // given fields are not numbers
+				}
+			
+			}
+			else if (op.equals("equal"))
+			{
+				try 
+				{
+					double right = Double.parseDouble(term);
+					double left = Double.parseDouble(score.getGrade());
+					if (left == right)
+					{
+						cmIdMatches.put(score.getCourseMembershipId(), score);
+					}
+				}
+				catch (NumberFormatException e)
+				{ // given fields are not numbers
+				}
+			}
+			else if (op.equals("less"))
+			{
+				try 
+				{
+					double right = Double.parseDouble(term);
+					double left = Double.parseDouble(score.getGrade());
+					if (left < right)
+					{
+						cmIdMatches.put(score.getCourseMembershipId(), score);
+					}
+				}
+				catch (NumberFormatException e)
+				{ // given fields are not numbers
+				}
+			}
 			else
 			{ // invalid operator
 				return new ArrayList<UserWrapper>();
