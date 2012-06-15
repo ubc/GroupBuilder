@@ -19,13 +19,12 @@ import blackboard.persist.course.GroupDbLoader;
 import blackboard.persist.course.GroupDbPersister;
 import blackboard.persist.course.GroupMembershipDbPersister;
 import blackboard.persist.user.UserDbLoader;
-import blackboard.platform.BbServiceManager;
 import blackboard.platform.context.Context;
-import blackboard.platform.context.ContextManager;
 import blackboard.platform.persistence.PersistenceServiceFactory;
 
 import ca.ubc.ctlt.group.Consumer;
 import ca.ubc.ctlt.group.GroupSet;
+import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
 
 public class BlackboardConsumer extends Consumer {
 	private BbPersistenceManager bbPm = PersistenceServiceFactory.getInstance()
@@ -33,29 +32,12 @@ public class BlackboardConsumer extends Consumer {
 
 	@Override
 	public void setGroupSets(HashMap<String, GroupSet> sets) throws Exception {
-		ContextManager ctxMgr = null;
-		Context ctx = null;
-		
 		if (sets == null) {
 			error("Group is empty!");
 			throw new Exception("Group is empty!");
 		}
 		
-
-		try {
-			// get services
-			log("Initializing context manager...");
-			ctxMgr = (ContextManager) BbServiceManager.lookupService(ContextManager.class);
-			ctx = ctxMgr.setContext(request);
-			log("Current context: " + ctx);
-		} catch (Exception e) {
-			error("Failed to initialize the context manager! " + e.getMessage());
-			throw e;
-		} finally {
-			if (ctxMgr != null) {
-				ctxMgr.releaseContext();
-			}
-		}
+		Context ctx = new BlackboardUtil(request).getContext();
 
 		log("Initializing loaders...");
 		GroupDbPersister groupDbPersister = null;

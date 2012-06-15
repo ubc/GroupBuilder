@@ -5,13 +5,19 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import ca.ubc.ctlt.group.GroupSet;
 
+import blackboard.base.InitializationException;
 import blackboard.data.course.Group;
 import blackboard.persist.Id;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.GroupDbLoader;
+import blackboard.platform.BbServiceException;
+import blackboard.platform.BbServiceManager;
 import blackboard.platform.context.Context;
+import blackboard.platform.context.ContextManager;
 
 public class BlackboardUtil
 {
@@ -20,6 +26,35 @@ public class BlackboardUtil
 	public BlackboardUtil(Context ctx)
 	{
 		this.ctx = ctx;
+	}
+
+	public BlackboardUtil(HttpServletRequest request) throws BbServiceException, InitializationException 
+	{
+		ContextManager ctxMgr = null;
+		try {
+			// get services
+			System.out.println("Initializing context manager...");
+			ctxMgr = (ContextManager) BbServiceManager
+					.lookupService(ContextManager.class);
+			ctx = ctxMgr.setContext(request);
+			System.out.println("Current context: " + ctx);
+		} catch (BbServiceException e) {
+			System.err.println("Lookup service failed! " + e.getMessage());
+			throw e;
+		} catch (InitializationException e) {
+			System.err.println("Failed to initialize the context manager! "
+					+ e.getFullMessageTrace());
+			throw e;
+		} finally {
+			if (ctxMgr != null) {
+				ctxMgr.releaseContext();
+			}
+		}
+	}
+	
+	public Context getContext() 
+	{
+		return ctx;
 	}
 	
 	public HashMap<String, GroupSet> getGroupSets() throws PersistenceException
