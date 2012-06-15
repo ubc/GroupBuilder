@@ -47,5 +47,6 @@
              ${user.role}
         </bbNG:listElement>
 	</bbNG:inventoryList>
+	
 </bbNG:includedPage>
 

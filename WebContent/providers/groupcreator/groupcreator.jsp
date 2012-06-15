@@ -50,10 +50,10 @@
 		<bbNG:selectOptionElement value="equal" optionLabel="Equal (numeric)" />
 		<bbNG:selectOptionElement value="less" optionLabel="Less Than (numeric)" />
 	</bbNG:selectElement>
-	<bbNG:textElement name="term" id="searchTerm" isRequired="true" />
+	<bbNG:textElement name="term" id="searchTerm" isRequired="true" onkeypress="return preventEnter(event);" />
 </li>
 <li>
-	<bbNG:button label="Apply" onClick="showUsersList();return false;" />
+	<bbNG:button label="Search" onClick="showUsersList();return false;" />
 </li>
 <li>
 	<div id="userlists">
@@ -61,25 +61,34 @@
 	</div>
 </li>
 </ol>
-  
+
 	<bbNG:jsBlock>
-        <script type="text/javascript">
-        function showUsersList() {
-	        var field = $('searchField').getValue().escapeHTML();
-	        var op = $('searchOp').getValue().escapeHTML();
-	        var term = $('searchTerm').getValue().escapeHTML();
-	        new Ajax.Request( 'providers/groupcreator/userslist.jsp', {
-	        	method: 'get',
-	        	parameters: "course_id=_365_1&searchField=" + field +"&searchOp=" + op + "&searchTerm=" + term,
-	        	onSuccess: 
-	        		function( req )
-		        	{
-	        			$('userlists').innerHTML = req.responseText;
-		        	}
-	        	}
-	        );
-        }
-        </script>
+		<script type="text/javascript">
+			function preventEnter(event)
+			{
+				if (event.keyCode == 13)
+				{
+					event.preventDefault();
+					showUsersList();
+					return false;
+				}
+			}
+			function showUsersList()
+			{
+				var field = $('searchField').getValue().escapeHTML();
+				var op = $('searchOp').getValue().escapeHTML();
+				var term = $('searchTerm').getValue().escapeHTML();
+				new Ajax.Updater('userlists',
+						'providers/groupcreator/userslist.jsp',
+						{
+							method : 'get',
+							parameters : "course_id=_365_1&searchField="
+									+ field + "&searchOp=" + op
+									+ "&searchTerm=" + term,
+							evalScripts : true
+						});
+			}
+		</script>
 	</bbNG:jsBlock>
 
 </bbNG:includedPage>
