@@ -1,7 +1,6 @@
 package ca.ubc.ctlt.group.provider;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import ca.ubc.ctlt.group.Group;
 import ca.ubc.ctlt.group.GroupSet;

@@ -82,7 +82,7 @@
 						'providers/groupcreator/userslist.jsp',
 						{
 							method : 'get',
-							parameters : "course_id=_365_1&searchField="
+							parameters : "course_id=<%=ctx.getCourseId().toExternalString() %>&searchField="
 									+ field + "&searchOp=" + op
 									+ "&searchTerm=" + term,
 							evalScripts : true

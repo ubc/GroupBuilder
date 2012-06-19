@@ -21,6 +21,7 @@ public class CourseUtil
 {
 	private CourseContext ctx;
 	private CourseMembershipDbLoader loader;
+	private String debug = "";
 
 	/**
 	 * @param ctx
@@ -33,6 +34,15 @@ public class CourseUtil
 		this.loader = CourseMembershipDbLoader.Default.getInstance();
 	}
 	
+	/**
+	 * Filter out users according to some criteria.
+	 * @param fieldId - the grade center field to filter on
+	 * @param op - the operator to apply for the filter
+	 * @param term - the actual term to use the operator on
+	 * @return
+	 * @throws PersistenceException
+	 * @throws ConnectionNotAvailableException
+	 */
 	public ArrayList<UserWrapper> search(String fieldId, String op, String term) throws PersistenceException, ConnectionNotAvailableException
 	{
 		Hashtable<Id, Score> cmIdMatches = new Hashtable<Id, Score>(); // holds the matching CourseMembershipId
@@ -42,6 +52,8 @@ public class CourseUtil
 		Lineitem item = null;
 		for (LineitemWrapper wrap : fields)
 		{
+			debug += "idStr: " + wrap.getIdString() + " fieldId: " + fieldId + "\n";
+			debug += "wrap: " + wrap.getName() + "\n";
 			if (wrap.getIdString().equals(fieldId))
 			{
 				item = wrap.getItem();
@@ -51,6 +63,7 @@ public class CourseUtil
 		// non-existent Lineitem
 		if (item == null)
 		{
+			debug += "Can't find lineitem\n";
 			return new ArrayList<UserWrapper>();
 		}
 		
@@ -58,6 +71,7 @@ public class CourseUtil
 		// get the Scores associated with the Lineitem, this is the search term
 		// we're looking for
 		ArrayList<Score> scores = item.getScores();
+		debug += "Size: " + scores.size() + "\n";
 		for (Score score : scores)
 		{
 			if (op.equals("contains"))
@@ -129,6 +143,7 @@ public class CourseUtil
 			}
 			else
 			{ // invalid operator
+				debug += "Invalid operator\n";
 				return new ArrayList<UserWrapper>();
 			}
 		}
@@ -148,6 +163,14 @@ public class CourseUtil
 		return ret;
 	}
 	
+	/**
+	 * Using the course membership list, wrap each member in the UserWrapper object.
+	 * 
+	 * @return A list of UserWrapper objects.
+	 * @throws KeyNotFoundException
+	 * @throws PersistenceException
+	 * @throws ConnectionNotAvailableException
+	 */
 	public ArrayList<UserWrapper> getUsers() throws KeyNotFoundException, PersistenceException, ConnectionNotAvailableException
 	{
 		ArrayList<CourseMembership> list = getCourseMemberships();
@@ -161,6 +184,26 @@ public class CourseUtil
 		return ret;
 	}
 	
+	/**
+	 * Primitive logging system, just keep concatenating log messages
+	 * into a single string and print it out. This returns the log
+	 * messages string. 
+	 * 
+	 * @return log messages
+	 */
+	public String getDebug()
+	{
+		return debug;
+	}
+	
+	/**
+	 * Load the current course context's membership list.
+	 * 
+	 * @return A list of the current course's members.
+	 * @throws ConnectionNotAvailableException
+	 * @throws KeyNotFoundException
+	 * @throws PersistenceException
+	 */
 	private ArrayList<CourseMembership> getCourseMemberships() throws ConnectionNotAvailableException, KeyNotFoundException, PersistenceException
 	{
 		// BB api splits loadBy* calls into a 'lightweight' and 'heavyweight' category for some reason.

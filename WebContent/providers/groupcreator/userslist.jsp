@@ -22,11 +22,13 @@
 		{
 			pageContext.setAttribute("usersList", cc.search(sField, sOp, sTerm));
 		}
+		//pageContext.setAttribute("debug", cc.getDebug()); // for debug
 	%>
 	</bbNG:jspBlock>
-
+	
 	<bbNG:inventoryList collection="${usersList}" objectVar="user"
-		className="UserWrapper" description="List of users in this course.">
+		className="UserWrapper" description="List of users in this course."
+		showAll="true">
 		<bbNG:listCheckboxElement name="usersSelected" value="${user.userName}" />
 		<bbNG:listElement label="User Name" name="userName" isRowHeader="true">
              ${user.userName}
