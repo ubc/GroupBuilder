@@ -25,7 +25,7 @@
 	pageContext.setAttribute("consumer", consumer);
 	%>
 
-	<bbNG:form action="process.jsp" method="post">
+	<bbNG:form action="process.jsp" method="post" onSubmit="return validateForm();">
 		<bbNG:dataCollection>
 		
 			<bbNG:step title="${provider.name} Provider - ${provider.description}">

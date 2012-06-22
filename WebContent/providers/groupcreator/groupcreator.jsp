@@ -13,7 +13,7 @@
 			Name
 			</label>
 		</div>
-		<bbNG:textElement name="name" />
+		<bbNG:textElement name="name" isRequired="true" />
 	</li> 
 </ol>
 <h3 class="steptitle">Search</h3>
