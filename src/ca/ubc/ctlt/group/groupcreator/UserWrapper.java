@@ -1,5 +1,7 @@
 package ca.ubc.ctlt.group.groupcreator;
 
+import java.util.LinkedHashSet;
+
 import blackboard.data.course.CourseMembership;
 import blackboard.data.user.User;
 
@@ -14,24 +16,33 @@ public class UserWrapper
 {
 	private CourseMembership member;
 	private User user;
-	private String searchFieldName;
-	private String searchFieldValue;
-	
-	public UserWrapper(CourseMembership member, String fieldName, String fieldValue)
-	{
-		this(member);
-		searchFieldName = fieldName;
-		searchFieldValue = fieldValue;
-	}
+	private LinkedHashSet<SearchFieldInfo> searchFields = new LinkedHashSet<SearchFieldInfo>();
 	
 	/**
 	 * @param member
-	 * @param user
 	 */
 	public UserWrapper(CourseMembership member)
 	{
 		this.member = member;
 		this.user = member.getUser();
+	}
+	
+	/**
+	 * @return the member
+	 */
+	public CourseMembership getMember()
+	{
+		return member;
+	}
+
+	public void addSearchFields(String name, String value)
+	{
+		searchFields.add(new SearchFieldInfo(name, value));
+	}
+	
+	public LinkedHashSet<SearchFieldInfo> getSearchFields()
+	{
+		return searchFields;
 	}
 	
 	public String getUserName()
@@ -64,21 +75,39 @@ public class UserWrapper
 		return user.getId().getExternalString();
 	}
 
-	/**
-	 * @return the searchFieldName
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
 	 */
-	public String getSearchFieldName()
+	@Override
+	public int hashCode()
 	{
-		return searchFieldName;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
 	}
 
-	/**
-	 * @return the searchFieldValue
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public String getSearchFieldValue()
+	@Override
+	public boolean equals(Object obj)
 	{
-		return searchFieldValue;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserWrapper other = (UserWrapper) obj;
+		if (user == null)
+		{
+			if (other.user != null)
+				return false;
+		}
+		else if (!user.equals(other.user))
+			return false;
+		return true;
 	}
 
-	
 }

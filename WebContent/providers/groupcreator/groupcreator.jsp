@@ -1,58 +1,66 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
   pageEncoding="ISO-8859-1"
-  import="java.util.ArrayList,
-  ca.ubc.ctlt.group.groupcreator.*,
-  blackboard.data.user.User,
-  blackboard.persist.user.UserDbLoader,
-  blackboard.persist.Id,
-  blackboard.persist.DataType
-  "%>
+  import="ca.ubc.ctlt.group.groupcreator.*" %>
 <%@ taglib prefix="bbNG" uri="/bbNG"%>
 
 <bbNG:includedPage ctxId="ctx">
   
 <ol>
-<li class="required">
-	<div class="label">
-		<label for="name">
-		<img src="/images/ci/icons/required.gif" alt="Required">
-		Name
-		</label>
-	</div>
-	<bbNG:textElement name="name" isRequired="true" />
-</li> 
+	<li>
+		<div class="label">
+			<label for="name">
+			Name
+			</label>
+		</div>
+		<bbNG:textElement name="name" />
+	</li> 
 </ol>
 <h3 class="steptitle">Search</h3>
 <ol>
 <li>
-	<div class="label">
-		<label for="field">
-		Grade Center Field
-		</label>
-	</div>
-	<bbNG:jspBlock>
-     <%
-        GradeCenterUtil gc = new GradeCenterUtil(ctx);
-        out.print("<select name=\"field\" id=\"searchField\">");
-        for (LineitemWrapper c : gc.getColumns())
-        {
-          out.print("<option value=" + c.getIdString() + ">" + c.getName() + "</option>");
-        }
-        out.print("</select>");
-      %>
-	</bbNG:jspBlock>
-	<bbNG:selectElement name="op" id="searchOp" isRequired="true">
-		<bbNG:selectOptionElement value="contains" optionLabel="Contains" />
-		<bbNG:selectOptionElement value="exactly" optionLabel="Exactly" />
-		<bbNG:selectOptionElement value="exclude" optionLabel="Exclude" />
-		<bbNG:selectOptionElement value="greater" optionLabel="Greater Than (numeric)" />
-		<bbNG:selectOptionElement value="equal" optionLabel="Equal (numeric)" />
-		<bbNG:selectOptionElement value="less" optionLabel="Less Than (numeric)" />
-	</bbNG:selectElement>
-	<bbNG:textElement name="term" id="searchTerm" isRequired="true" onkeypress="return preventEnter(event);" />
+	<bbNG:button label="Add Search Criteria" onClick="addCriteria();return false;" />
 </li>
 <li>
+	<!-- if the user adds additional criterias, we basically just duplicate the entire searchOptions div -->
+	<div id="searchOptions">
+		<div class="label">
+			<label for="field">
+			Grade Center Field
+			</label>
+		</div>
+		<bbNG:jspBlock>
+	     <%
+	        GradeCenterUtil gc = new GradeCenterUtil(ctx);
+	        out.print("<select name=\"searchField\" >");
+	        for (LineitemWrapper c : gc.getColumns())
+	        {
+	          out.print("<option value=" + c.getIdString() + ">" + c.getName() + "</option>");
+	        }
+	        out.print("</select>");
+	      %>
+		</bbNG:jspBlock>
+		<bbNG:selectElement name="searchOp" isRequired="true">
+			<bbNG:selectOptionElement value="contains" optionLabel="Contains" />
+			<bbNG:selectOptionElement value="exactly" optionLabel="Exactly" />
+			<bbNG:selectOptionElement value="exclude" optionLabel="Exclude" />
+			<bbNG:selectOptionElement value="greater" optionLabel="Greater Than (numeric)" />
+			<bbNG:selectOptionElement value="equal" optionLabel="Equal (numeric)" />
+			<bbNG:selectOptionElement value="less" optionLabel="Less Than (numeric)" />
+		</bbNG:selectElement>
+		<bbNG:textElement name="searchTerm" onkeypress="return preventEnter(event);" />
+	</div>
+</li>
+<li id="combineSearchSection">
+	<div class="label">
+		<label for="field">
+		Combine Search Criterias With
+		</label>
+	</div>
+	<input type="radio" name="combinationOp" value="and" checked="checked" />And
+	<input type="radio" name="combinationOp" value="or" />Or
+</li>
+<li id="searchButtonSection">
 	<bbNG:button label="Search" onClick="showUsersList();return false;" />
 </li>
 <li>
@@ -64,6 +72,25 @@
 
 	<bbNG:jsBlock>
 		<script type="text/javascript">
+			// keeps track of how many criteria sections the user has created so far, we use this to uniquely id a criteria section 
+			var criteriaCount = 0;
+			$('combineSearchSection').hide();
+			// add another search filter option
+			function addCriteria()
+			{
+				// need to give the whole search criteria an unique id so we can remove the whole section 
+				// if the user turns out now to need this 
+				var liId = "criteria_" + criteriaCount;
+				// the html code for the self removal button 
+				var removeButton = "<button type='button' onclick=\"$('"+ liId +"').remove(); return false;\" >Remove</button>";
+				// insert the section at the bottom of the search criterias 
+				$('combineSearchSection').insert({before: "<li id='" + liId + "'>" + $('searchOptions').innerHTML + removeButton + "</li>"});
+				criteriaCount++;
+				$('combineSearchSection').show();
+			}
+			
+			// pressing enter after entering a search term usually triggers the submit button,
+			// we want to trigger the search function instead. 
 			function preventEnter(event)
 			{
 				if (event.keyCode == 13)
@@ -73,19 +100,21 @@
 					return false;
 				}
 			}
+			
+			// perform the actual search function 
 			function showUsersList()
 			{
-				var field = $('searchField').getValue().escapeHTML();
-				var op = $('searchOp').getValue().escapeHTML();
-				var term = $('searchTerm').getValue().escapeHTML();
+				// lazy way to get all the search parameters, just grab 
+				// ALL the form parameters.
+				var params = document.forms[0].serialize(true);
+				// need to add course_id for BBL to know where it is 
+				params.course_id = '<%=ctx.getCourseId().toExternalString() %>';
 				new Ajax.Updater('userlists',
 						'providers/groupcreator/userslist.jsp',
 						{
-							method : 'get',
-							parameters : "course_id=<%=ctx.getCourseId().toExternalString() %>&searchField="
-									+ field + "&searchOp=" + op
-									+ "&searchTerm=" + term,
-							evalScripts : true
+							parameters : params,
+							// enable js evaluation of the response or the 'select all' checkbox for inventoryList won't work 
+							evalScripts : true 
 						});
 			}
 		</script>
