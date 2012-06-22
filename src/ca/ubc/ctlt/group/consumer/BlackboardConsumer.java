@@ -1,5 +1,6 @@
 package ca.ubc.ctlt.group.consumer;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import blackboard.data.course.Group;
 import blackboard.data.course.GroupMembership;
 import blackboard.data.user.User;
 import blackboard.persist.BbPersistenceManager;
+import blackboard.persist.Id;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseMembershipDbLoader;
 import blackboard.persist.course.GroupDbLoader;
@@ -29,12 +31,34 @@ import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
 public class BlackboardConsumer extends Consumer {
 	private BbPersistenceManager bbPm = PersistenceServiceFactory.getInstance()
 			.getDbPersistenceManager();
+	private int numGroups = 0;
+	private Group lastGroup = null;
+	
+	public void goodbye(Id courseId) throws IOException {
+		if (lastGroup == null)
+		{ // do nothing if an error happened
+			return;
+		}
+		if (numGroups == 1)
+		{
+			String url = "/webapps/blackboard/execute/modulepage/viewGroup?editMode=true&course_id=" + courseId.getExternalString() + 
+					"&group_id=" + lastGroup.getId().getExternalString();
+			response.sendRedirect(url);
+		}
+		else
+		{
+			String url = "/webapps/blackboard/execute/groupInventoryList?course_id=" + courseId.getExternalString();
+			response.sendRedirect(url);
+		}
+		numGroups = 0;
+		lastGroup = null;
+	}
 
 	@Override
 	public void setGroupSets(HashMap<String, GroupSet> sets) throws Exception {
 		if (sets == null) {
 			error("Group is empty!");
-			throw new Exception("Group is empty!");
+			throw new NullPointerException("Group is empty!");
 		}
 		
 		Context ctx = new BlackboardUtil(request).getContext();
@@ -97,17 +121,21 @@ public class BlackboardConsumer extends Consumer {
 					try {
 						bbGroup = createGroup(group, bbGroupSet);
 					} catch (ValidationException e) {
-						error("Failed to creat group: "+group.getName()+". ("+e.getMessage()+")");
+						error("Failed to create group: "+group.getName()+". ("+e.getMessage()+")");
 						continue;
 					}
 				} else {
 					bbGroup = (Group) courseGroups.get(courseGroupIndex);
 				}
+				numGroups++;
+				lastGroup = bbGroup;
 				
 				// creating members in the group
 				createMembership(bbGroup, group.getMemberList());
 			}
 		}
+		
+		goodbye(ctx.getCourseId());
 	}
 	
 	private Group createGroup(ca.ubc.ctlt.group.Group group, Group groupSet) throws PersistenceException, ValidationException {
