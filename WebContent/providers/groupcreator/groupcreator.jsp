@@ -62,6 +62,7 @@
 </li>
 <li id="searchButtonSection">
 	<bbNG:button label="Search" onClick="showUsersList();return false;" />
+	<span id="searchStatus"></span>
 </li>
 <li>
 	<div id="userlists">
@@ -114,7 +115,9 @@
 						{
 							parameters : params,
 							// enable js evaluation of the response or the 'select all' checkbox for inventoryList won't work 
-							evalScripts : true 
+							evalScripts : true,
+							onCreate : function () { $('searchStatus').update("Searching, please wait..."); },
+							onComplete : function () { $('searchStatus').update(); },
 						});
 			}
 		</script>
