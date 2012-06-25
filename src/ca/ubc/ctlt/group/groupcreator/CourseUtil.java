@@ -124,11 +124,132 @@ public class CourseUtil
 	 * @throws PersistenceException
 	 * @throws ConnectionNotAvailableException
 	 */
-	private LinkedHashSet<UserWrapper> searchSingleCriteria(SearchCriteria criteria) throws PersistenceException, ConnectionNotAvailableException
+	private LinkedHashSet<UserWrapper> searchSingleCriteria(SearchCriteria criteria) 
+			throws PersistenceException, ConnectionNotAvailableException
 	{
 		String fieldId = criteria.getField();
 		String op = criteria.getOp();
 		String term = criteria.getTerm();
+		
+		GradeCenterUtil gc = new GradeCenterUtil(ctx);
+		
+		debug += "Checking field id: " + fieldId + "\n";
+		if (gc.getUserinfoColumns().containsKey(fieldId))
+		{
+			debug += "Is a user info field\n";
+			return searchSingleCriteriaUserinfo(fieldId, op, term);
+		}
+		
+		return searchSingleCriteriaLineitems(fieldId, op, term);
+	}
+	
+	private LinkedHashSet<UserWrapper> searchSingleCriteriaUserinfo(String fieldId, String op, String term) 
+			throws KeyNotFoundException, PersistenceException, ConnectionNotAvailableException
+	{
+		ArrayList<UserWrapper> users = getUsers();
+		LinkedHashSet<UserWrapper> ret = new LinkedHashSet<UserWrapper>();
+		for (UserWrapper user : users)
+		{
+			String target; // the user's value of the field being searched on
+			if (fieldId.equals("firstname"))
+			{
+				target = user.getGivenName();
+			}
+			else if (fieldId.equals("lastname"))
+			{
+				target = user.getFamilyName();
+			}
+			else if (fieldId.equals("studentid"))
+			{
+				target = user.getStudentId();
+			}
+			else
+			{
+				debug += "Unknown user info field.\n";
+				return ret;
+			}
+			debug += "target: " + target + " term: " + term + "\n";
+			
+			if (op.equals("contains"))
+			{
+				if (target.contains(term) || term.isEmpty())
+				{
+					ret.add(user);
+				}
+			}
+			else if (op.equals("exactly"))
+			{
+				if (target.equals(term))
+				{
+					ret.add(user);
+				}
+			}
+			else if (op.equals("exclude"))
+			{
+				if (!target.contains(term))
+				{
+					ret.add(user);
+				}
+			}
+			else if (op.equals("greater"))
+			{
+				try 
+				{
+					double right = Double.parseDouble(term);
+					double left = Double.parseDouble(target);
+					if (left > right)
+					{
+						ret.add(user);
+					}
+				}
+				catch (NumberFormatException e)
+				{ // given fields are not numbers
+				}
+			
+			}
+			else if (op.equals("equal"))
+			{
+				try 
+				{
+					double right = Double.parseDouble(term);
+					double left = Double.parseDouble(target);
+					if (left == right)
+					{
+						ret.add(user);
+					}
+				}
+				catch (NumberFormatException e)
+				{ // given fields are not numbers
+				}
+			}
+			else if (op.equals("less"))
+			{
+				try 
+				{
+					double right = Double.parseDouble(term);
+					double left = Double.parseDouble(target);
+					if (left < right)
+					{
+						ret.add(user);
+					}
+				}
+				catch (NumberFormatException e)
+				{ // given fields are not numbers
+				}
+			}
+			else
+			{ // invalid operator
+				debug += "Invalid operator.\n";
+				return new LinkedHashSet<UserWrapper>();
+			}
+		}
+		
+		return ret;
+	}
+	
+	private LinkedHashSet<UserWrapper> searchSingleCriteriaLineitems(String fieldId, String op, String term) 
+			throws KeyNotFoundException, PersistenceException, ConnectionNotAvailableException
+	{
 		// We need to first find the Lineitem that we're searching on, e.g.: The "Section" Lineitem.
 		// Once the Lineitem is found, we need the Scores stored for that item.
 		// The Scores is where we apply the search operator and term, it'll hold the actual
