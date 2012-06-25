@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
   pageEncoding="ISO-8859-1"
-  import="ca.ubc.ctlt.group.groupcreator.*" %>
+  import="ca.ubc.ctlt.group.groupcreator.*, java.util.Map" %>
 <%@ taglib prefix="bbNG" uri="/bbNG"%>
 
 <bbNG:includedPage ctxId="ctx">
@@ -30,15 +30,19 @@
 			</label>
 		</div>
 		<bbNG:jspBlock>
-	     <%
-	        GradeCenterUtil gc = new GradeCenterUtil(ctx);
-	        out.print("<select name=\"searchField\" >");
-	        for (LineitemWrapper c : gc.getColumns())
-	        {
-	          out.print("<option value=" + c.getIdString() + ">" + c.getName() + "</option>");
-	        }
-	        out.print("</select>");
-	      %>
+		<%
+		GradeCenterUtil gc = new GradeCenterUtil(ctx);
+		out.print("<select name=\"searchField\" >");
+		for (LineitemWrapper c : gc.getLineitemColumns())
+		{
+			out.print("<option value=" + c.getIdString() + ">" + c.getName() + "</option>");
+		}
+		for (Map.Entry<String, String> c : gc.getUserinfoColumns().entrySet())
+		{
+			out.print("<option value=" + c.getKey() + ">" + c.getValue() + "</option>");
+		}
+		out.print("</select>");
+		%>
 		</bbNG:jspBlock>
 		<bbNG:selectElement name="searchOp" isRequired="true">
 			<bbNG:selectOptionElement value="contains" optionLabel="Contains" />
