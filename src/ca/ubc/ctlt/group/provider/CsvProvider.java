@@ -8,7 +8,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import ca.ubc.ctlt.group.*;
 
 public class CsvProvider extends Provider {
-	
+
 	@Override
 	public HashMap<String, GroupSet> getGroupSets() {
 		if (null == request) {
@@ -33,6 +33,7 @@ public class CsvProvider extends Provider {
 		try {
 			reader = new CSVReader(new InputStreamReader(file.getInputStream()));
 			String[] nextLine;
+			reader.readNext(); // ignore the first line since it's the header
 			while ((nextLine = reader.readNext()) != null) {
 				if (nextLine[0].trim().isEmpty()) {
 					// use GroupSet.EMPTY_NAME for group set name for the file without group set
@@ -69,7 +70,7 @@ public class CsvProvider extends Provider {
 	@Override
 	public String getOptionsPage()
 	{
-		return "providers/csv/options.html";
+		return "providers/csv/options.jsp";
 	}
 
 	@Override
@@ -84,4 +85,12 @@ public class CsvProvider extends Provider {
 		return "Providing group information from CSV file.";
 	}
 	
+	/* (non-Javadoc)
+	 * @see ca.ubc.ctlt.group.Provider#hasFileUpload()
+	 */
+	@Override
+	public boolean hasFileUpload()
+	{
+		return true;
+	}
 }

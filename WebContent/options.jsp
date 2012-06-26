@@ -23,9 +23,14 @@
 	consumer.setResponse(response);
 	pageContext.setAttribute("provider", provider);
 	pageContext.setAttribute("consumer", consumer);
+	pageContext.setAttribute("enctype", "application/x-www-form-urlencoded");
+	if (provider.hasFileUpload())
+	{
+		pageContext.setAttribute("enctype", "multipart/form-data");
+	}
 	%>
 
-	<bbNG:form action="process.jsp" method="post" onSubmit="return validateForm();">
+	<bbNG:form action="process.jsp" method="post" onSubmit="return validateForm();" enctype="${enctype}">
 		<bbNG:dataCollection>
 		
 			<bbNG:step title="${provider.name} Provider - ${provider.description}">
