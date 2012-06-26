@@ -5,7 +5,7 @@ import java.util.HashMap;
 import ca.ubc.ctlt.group.Group;
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.Provider;
-import ca.ubc.ctlt.group.User;
+import ca.ubc.ctlt.group.GroUser;
 
 public class GroupCreatorProvider extends Provider
 {
@@ -27,7 +27,7 @@ public class GroupCreatorProvider extends Provider
 		// populate the group
 		for (String user : users)
 		{
-			group.addMember(new User(user));
+			group.addMember(new GroUser(user));
 		}
 		
 		// add group to set, and set to return

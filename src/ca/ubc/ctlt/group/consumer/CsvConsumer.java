@@ -11,7 +11,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import ca.ubc.ctlt.group.Consumer;
 import ca.ubc.ctlt.group.Group;
 import ca.ubc.ctlt.group.GroupSet;
-import ca.ubc.ctlt.group.User;
+import ca.ubc.ctlt.group.GroUser;
 
 public class CsvConsumer extends Consumer {
 	
@@ -25,7 +25,7 @@ public class CsvConsumer extends Consumer {
 		OutputStreamWriter steamWriter = new OutputStreamWriter(response.getOutputStream());
 		CSVWriter writer = new CSVWriter(steamWriter);
 		List<String[]> data = new ArrayList<String[]>();
-		String[] header = {"GroupSet", "Group", "Username"};
+		String[] header = {"GroupSet", "Group", "Student ID"};
 		data.add(header);
 		
 		for (Entry<String, GroupSet> entryGroupSet : sets.entrySet()) {
@@ -35,9 +35,9 @@ public class CsvConsumer extends Consumer {
 			for (Entry<String, Group> entryGroup : set.getGroups().entrySet()) {
 				Group group = entryGroup.getValue();
 			
-				for (Entry<String, User> entryMember : group.getMemberList().entrySet()) {
-					User user = entryMember.getValue();
-					String[] row = {setName, group.getName(), user.getId()};
+				for (Entry<String, GroUser> entryMember : group.getMemberList().entrySet()) {
+					GroUser user = entryMember.getValue();
+					String[] row = {setName, group.getName(), user.getStudentID()};
 					data.add(row);
 				}
 			}

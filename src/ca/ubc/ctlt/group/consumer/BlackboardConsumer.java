@@ -153,7 +153,7 @@ public class BlackboardConsumer extends Consumer {
 		return bbGroup;
 	}
 	
-	private void createMembership(Group bbGroup, HashMap<String, ca.ubc.ctlt.group.User> memberList) throws PersistenceException {
+	private void createMembership(Group bbGroup, HashMap<String, ca.ubc.ctlt.group.GroUser> memberList) throws PersistenceException {
 		GroupMembershipDbPersister groupMembershipDbPersister;
 		CourseMembershipDbLoader courseMembershipLoader;
 		UserDbLoader userLoader;
@@ -165,12 +165,12 @@ public class BlackboardConsumer extends Consumer {
 				.getLoader(CourseMembershipDbLoader.TYPE);
 		
 		// create membership
-		for (Entry<String, ca.ubc.ctlt.group.User> entry : memberList.entrySet()) {
-			ca.ubc.ctlt.group.User user = entry.getValue();
+		for (Entry<String, ca.ubc.ctlt.group.GroUser> entry : memberList.entrySet()) {
+			ca.ubc.ctlt.group.GroUser user = entry.getValue();
 			User bbUser = null;
 			
 			try {
-				bbUser = userLoader.loadByUserName(user.getId());
+				bbUser = userLoader.loadByUserName(user.getUserName());
 
 				CourseMembership courseMembership = courseMembershipLoader
 						.loadByCourseAndUserId(bbGroup.getCourseId(),

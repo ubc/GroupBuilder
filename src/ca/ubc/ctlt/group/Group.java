@@ -11,15 +11,15 @@ import blackboard.platform.persistence.PersistenceServiceFactory;
 public class Group {
 	private String name;
 	private String id;
-	private HashMap<String, User> memberList;
+	private HashMap<String, GroUser> memberList;
 	
 	public Group(String name) {
-		memberList = new HashMap<String, User>();
+		memberList = new HashMap<String, GroUser>();
 		this.name = name;
 	}
 	
 	public Group(blackboard.data.course.Group bbGroup) throws PersistenceException {
-		memberList = new HashMap<String, User>();
+		memberList = new HashMap<String, GroUser>();
 		this.name = bbGroup.getTitle();
 		this.id = bbGroup.getId().toExternalString();
 		BbPersistenceManager bbPm = PersistenceServiceFactory.getInstance()
@@ -28,9 +28,7 @@ public class Group {
 		List<blackboard.data.user.User> bbUserList = userLoader.loadByGroupId(bbGroup.getId());
 		
 		for (blackboard.data.user.User u:bbUserList) {
-			User user = new User();
-			user.setId(u.getUserName());
-			user.setName(u.getGivenName() + " " + u.getFamilyName());
+			GroUser user = new GroUser(u);
 			addMember(user);
 		}
 	}
@@ -53,18 +51,18 @@ public class Group {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public HashMap<String, User> getMemberList() {
+	public HashMap<String, GroUser> getMemberList() {
 		return memberList;
 	}
-	public void setMemberList(HashMap<String, User> memberList) {
+	public void setMemberList(HashMap<String, GroUser> memberList) {
 		this.memberList = memberList;
 	}
 	
-	public User getMember(String name) {
+	public GroUser getMember(String name) {
 		return memberList.get(name);
 	}
 	
-	public void addMember(User user) {
-		memberList.put(user.getId(), user);
+	public void addMember(GroUser user) {
+		memberList.put(user.getUserName(), user);
 	}
 }

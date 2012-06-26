@@ -4,13 +4,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import org.apache.commons.fileupload.FileItem;
+
+import blackboard.base.InitializationException;
+import blackboard.db.ConnectionNotAvailableException;
+import blackboard.persist.KeyNotFoundException;
+import blackboard.persist.PersistenceException;
+import blackboard.platform.BbServiceException;
 import au.com.bytecode.opencsv.CSVReader;
 import ca.ubc.ctlt.group.*;
 
 public class CsvProvider extends Provider {
 
 	@Override
-	public HashMap<String, GroupSet> getGroupSets() {
+	public HashMap<String, GroupSet> getGroupSets() 
+			throws KeyNotFoundException, ConnectionNotAvailableException, PersistenceException, InitializationException, BbServiceException {
 		if (null == request) {
 			System.err.println("Request object is empty!");
 			return null;
@@ -23,7 +30,8 @@ public class CsvProvider extends Provider {
 		return null;
 	}
 
-	private boolean processFile() {
+	private boolean processFile() 
+			throws KeyNotFoundException, ConnectionNotAvailableException, PersistenceException, InitializationException, BbServiceException {
 		sets = new HashMap<String, GroupSet>();
 		
 		FileItem file = ((UploadMultipartRequestWrapper) request)
@@ -52,9 +60,9 @@ public class CsvProvider extends Provider {
 					set.addGroup(group);
 				}
 				
-				User user = group.getMember(nextLine[2].trim());	
+				GroUser user = group.getMember(nextLine[2].trim());	
 				if (user == null) {
-					user = new User(nextLine[2].trim());
+					user = new GroUser(nextLine[2].trim(), request);
 					group.addMember(user);
 				}
 			}
