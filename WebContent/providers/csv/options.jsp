@@ -18,8 +18,10 @@
 }
 </style>
 
-<input type='file' name='csvfile'>
-<!-- <bbNG:filePicker bypassStepCheck="true" baseElementName="csvimport" var="csvimport" /> -->
+<!-- <input type='file' name='csvfile'> -->
+
+<bbNG:filePicker bypassStepCheck="true" baseElementName="csvfile" var="csvfile">
+</bbNG:filePicker>
 
 <p id="startCSVExp">
 The input file must be a comma delimited CSV file. Each value can be surrounded by quote marks. The first line is 
