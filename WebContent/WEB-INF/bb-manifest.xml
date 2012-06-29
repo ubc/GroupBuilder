@@ -2,9 +2,9 @@
 <manifest>
   <!-- core extension information -->
     <plugin>
-        <name value= "1GroUP"/>
-        <handle value= "1GroUP"/>
-        <description value= "Group management tool"/>
+        <name value= "GroupBuilder"/>
+        <handle value= "GroupBuilder"/>
+        <description value= "Group import/export/creation tool."/>
         <version value= "1.0.0"/>
         <requires>
             <bbversion value="9.1"/>
@@ -13,7 +13,7 @@
             <id value="ubc"/>
             <name value="University of British Columbia"/>
             <url value="http://www.ubc.ca/" />
-            <description value="Group management tool" />
+            <description value="Group import/export/creation tool." />
         </vendor>
         
 <!--    These two JSPs are displayed when the "remove" and "properties" buttons --> 
@@ -24,15 +24,15 @@
         </http-actions>
  -->    
         <application-defs>
-            <application handle="1GroUP" type="course" use-ssl="false" 
-            	name="1GroUP" can-allow-guest="false">
-                <description lang="en_US">Group Management</description>
+            <application handle="GroupBuilder" type="course" use-ssl="false" 
+            	name="GroupBuilder" can-allow-guest="false">
+                <description lang="en_US">Group import/export/creation tool.</description>
                 <links>
                     <link>
                         <type value="course_tool"/>
-                        <name value="GroUP"/>
+                        <name value="GroupBuilder"/>
                         <url value="index.jsp" />
-                        <description value="GroUP" />
+                        <description value="GroupBuilder" />
                     </link>
                 </links>
             </application>

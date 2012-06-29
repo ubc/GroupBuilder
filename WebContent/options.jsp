@@ -9,7 +9,7 @@
 	
 	<bbNG:pageHeader instructions="Please follow the steps">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
-		title="GroUP"/>
+		title="GroupBuilder"/>
 	</bbNG:pageHeader>
 	
 	<%

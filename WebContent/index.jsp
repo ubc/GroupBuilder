@@ -9,7 +9,7 @@
 	
 	<bbNG:pageHeader instructions="Please follow the steps">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
-		title="GroUP"/>
+		title="GroupBuilder"/>
 	</bbNG:pageHeader>
 	
 <style type="text/css">
@@ -25,6 +25,17 @@
 #shortcuts li a
 {
 	font-weight: bold;
+}
+#tinyfootnote
+{
+margin-top: 1em;
+font-size: 0.7em;
+text-align: center;
+color: #aaa;
+}
+#tinyfootnote a:link, #tinyfootnote a:visited
+{
+color: #888;
 }
 </style>
 
@@ -107,5 +118,7 @@ function shortcut(type)
 }
 </script>
 </bbNG:jsBlock>
+
+<p id="tinyfootnote">Open source project, available on <a href="https://github.com/ubc/GroupBuilder" target="_blank">Github</a></p>
 
 </bbNG:learningSystemPage>
