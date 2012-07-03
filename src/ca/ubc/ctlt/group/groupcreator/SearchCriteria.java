@@ -5,6 +5,8 @@ public class SearchCriteria
 	private String field;
 	private String op;
 	private String term;
+	private boolean userInfoField = false;
+	
 	/**
 	 * @param field
 	 * @param op
@@ -39,4 +41,15 @@ public class SearchCriteria
 		return term;
 	}
 
+	/**
+	 * @param userInfoField the userInfoField to set
+	 */
+	public void setUserInfoField(boolean userInfoField)
+	{
+		this.userInfoField = userInfoField;
+	}
+	public boolean isUserInfoField()
+	{
+		return userInfoField;
+	}
 }

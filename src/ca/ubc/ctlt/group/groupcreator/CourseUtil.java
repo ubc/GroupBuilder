@@ -3,6 +3,7 @@ package ca.ubc.ctlt.group.groupcreator;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.sql.Connection;
 
 
@@ -55,10 +56,15 @@ public class CourseUtil
 		}
 		
 		if (criterias.size() == 1)
-		{
-			return searchSingleCriteria(criterias.get(0));
+		{ // only one criteria
+			debug += "Search called with one criteria.\n";
+			LinkedHashSet<UserWrapper> ret = searchSingleCriteria(criterias.get(0));
+			createSearchFields(ret, criterias); // allow display of the search field values
+			return ret;
 		}
 		
+		debug += "Search called with multiple criteria.\n";
+		debug += "Size Crit 0: " + criterias.size();
 		if (combinationOp.equals("or"))
 		{ // or means that we combine all the results together
 			LinkedHashSet<UserWrapper> ret = new LinkedHashSet<UserWrapper>();
@@ -72,12 +78,19 @@ public class CourseUtil
 		}
 		else if (combinationOp.equals("and"))
 		{ // and means that the resulting elements must meet all criterias
-			LinkedHashSet<UserWrapper> ret = searchSingleCriteria(criterias.remove(0));
+			LinkedHashSet<UserWrapper> ret = null;
+			debug += "Size Crit 1: " + criterias.size();
 			for (SearchCriteria criteria : criterias)
 			{
+				if (ret == null)
+				{ // the very first search is a special case for set intersect
+					ret = searchSingleCriteria(criteria);
+					continue;
+				}
 				LinkedHashSet<UserWrapper> searchRes = searchSingleCriteria(criteria);
 				ret.retainAll(searchRes); // this is a set intersection
 			}
+			debug += "Size Crit 2: " + criterias.size();
 			createSearchFields(ret, criterias); // allow display of the search field values
 			return ret;
 		}
@@ -94,24 +107,42 @@ public class CourseUtil
 	 * @throws PersistenceException 
 	 * @throws KeyNotFoundException 
 	 */
-	private void createSearchFields(LinkedHashSet<UserWrapper> wrappers, ArrayList<SearchCriteria> criterias) throws KeyNotFoundException, PersistenceException
+	private void createSearchFields(LinkedHashSet<UserWrapper> wrappers, ArrayList<SearchCriteria> criterias) throws PersistenceException
 	{
 		ScoreDbLoader scoreLoader = ScoreDbLoader.Default.getInstance();
 		LineitemDbLoader lineitemLoader = LineitemDbLoader.Default.getInstance();
+		debug += "Size Criterias: " + criterias.size() + "\n";
 		
 		// for each criteria, update all userwrappers with that criteria's name and value
 		for (SearchCriteria criteria : criterias)
 		{
+			if (criteria.isUserInfoField())
+			{ // this is a user info field that is already displayed to the user by default
+				debug += "Skipping criteria: " + criteria.getField();
+				continue;
+			}
 			for (UserWrapper wrap : wrappers)
-			{
+			{ // this is a field that needs to be displayed to the user
+				debug += "Trying to get values for: " + criteria.getField();
+				// get the field
 				Lineitem item = lineitemLoader.loadById(
-						Id.generateId(Lineitem.LINEITEM_DATA_TYPE, criteria.getField())
-					);
-				Score score = scoreLoader.loadByCourseMembershipIdAndLineitemId(
+							Id.generateId(Lineitem.LINEITEM_DATA_TYPE, criteria.getField())
+						);
+				Score score;
+				try
+				{
+					score = scoreLoader.loadByCourseMembershipIdAndLineitemId(
 						wrap.getMember().getId(),
 						item.getId()
 					);
-				wrap.addSearchFields(item.getName(), score.getGrade());
+					// get the value of the field for this user
+					debug += "... Done! " + item.getName() + " " + score.getGrade() + "\n";
+					wrap.addSearchFields(item.getName(), score.getGrade());
+				} catch (KeyNotFoundException e)
+				{ // special case where no score can be found for this user, might be a prof?
+					debug += "... Failed!\n";
+					wrap.addSearchFields(item.getName(), "");
+				}				
 			}
 		}
 	}
@@ -131,12 +162,11 @@ public class CourseUtil
 		String op = criteria.getOp();
 		String term = criteria.getTerm();
 		
-		GradeCenterUtil gc = new GradeCenterUtil(ctx);
-		
 		debug += "Checking field id: " + fieldId + "\n";
-		if (gc.getUserinfoColumns().containsKey(fieldId))
+		if (GradeCenterUtil.getUserinfoColumns().containsKey(fieldId))
 		{
 			debug += "Is a user info field\n";
+			criteria.setUserInfoField(true);
 			return searchSingleCriteriaUserinfo(fieldId, op, term);
 		}
 		
@@ -150,25 +180,12 @@ public class CourseUtil
 		LinkedHashSet<UserWrapper> ret = new LinkedHashSet<UserWrapper>();
 		for (UserWrapper user : users)
 		{
-			String target; // the user's value of the field being searched on
-			if (fieldId.equals("firstname"))
-			{
-				target = user.getGivenName();
-			}
-			else if (fieldId.equals("lastname"))
-			{
-				target = user.getFamilyName();
-			}
-			else if (fieldId.equals("studentid"))
-			{
-				target = user.getStudentId();
-			}
-			else
+			String target = getValueFromUserInfoField(user, fieldId); // the user's value of the field being searched on
+			if (target.isEmpty())
 			{
 				debug += "Unknown user info field.\n";
 				return ret;
 			}
-			debug += "target: " + target + " term: " + term + "\n";
 			
 			if (op.equals("contains"))
 			{
@@ -247,6 +264,26 @@ public class CourseUtil
 		return ret;
 	}
 	
+	private String getValueFromUserInfoField(UserWrapper user, String fieldId)
+	{
+		if (fieldId.equals("firstname"))
+		{
+			return user.getGivenName();
+		}
+		else if (fieldId.equals("lastname"))
+		{
+			return user.getFamilyName();
+		}
+		else if (fieldId.equals("studentid"))
+		{
+			return user.getStudentId();
+		}
+		else
+		{
+			return "";
+		}
+	}
+
 	private LinkedHashSet<UserWrapper> searchSingleCriteriaLineitems(String fieldId, String op, String term) 
 			throws KeyNotFoundException, PersistenceException, ConnectionNotAvailableException
 	{
@@ -393,6 +430,7 @@ public class CourseUtil
 	{
 		return debug;
 	}
+	
 	
 	/**
 	 * Load the current course context's membership list.
