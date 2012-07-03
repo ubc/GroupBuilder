@@ -5,8 +5,19 @@
 <%@ taglib prefix="bbNG" uri="/bbNG"%>
 
 <bbNG:includedPage ctxId="ctx">
-  
-<ol>
+
+<style type='text/css'>
+#groupcreatorInstructions
+{
+	margin-top: 1em;
+}
+#groupcreatorInstructions li
+{
+	list-style:	decimal inside;
+}
+</style>
+
+<ul>
 	<li>
 		<div class="label">
 			<label for="name">
@@ -15,9 +26,9 @@
 		</div>
 		<bbNG:textElement name="name" isRequired="true" />
 	</li> 
-</ol>
+</ul>
 <h3 class="steptitle">Search</h3>
-<ol>
+<ul>
 <li>
 	<bbNG:button label="Add Search Criteria" onClick="addCriteria();return false;" />
 </li>
@@ -73,7 +84,15 @@
 		<jsp:include page="userslist.jsp" flush="true" />
 	</div>
 </li>
-</ol>
+<li>
+	<h4>Instructions</h4>
+	<ol id='groupcreatorInstructions'>
+		<li>Enter a name for the group.</li>
+		<li>Enter search parameters and then click search.</li>
+		<li>Check that the student selections are correct and click submit.</li>
+	</ol>
+</li>
+</ul>
 
 	<bbNG:jsBlock>
 		<script type="text/javascript">
