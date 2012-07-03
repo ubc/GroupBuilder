@@ -69,7 +69,7 @@ public class GradeCenterUtil
 	 * 
 	 * @return
 	 */
-	public TreeMap<String, String> getUserinfoColumns()
+	public static TreeMap<String, String> getUserinfoColumns()
 	{
 		TreeMap<String, String> ret = new TreeMap<String, String>();
 		ret.put("lastname", "Last Name");

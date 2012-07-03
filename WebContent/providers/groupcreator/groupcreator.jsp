@@ -37,7 +37,7 @@
 		{
 			out.print("<option value=" + c.getIdString() + ">" + c.getName() + "</option>");
 		}
-		for (Map.Entry<String, String> c : gc.getUserinfoColumns().entrySet())
+		for (Map.Entry<String, String> c : GradeCenterUtil.getUserinfoColumns().entrySet())
 		{
 			out.print("<option value=" + c.getKey() + ">" + c.getValue() + "</option>");
 		}
@@ -106,6 +106,19 @@
 				}
 			}
 			
+			// unfortunately, this function is necessary since just making the 'select all users'
+			// checkbox checked does not trigger the event handler that checks all the boxes. 
+			function selectAllCheckboxes()
+			{
+				// first select the individual user checkboxes 
+				var checkboxes = document.forms[0].getInputs('checkbox', 'usersSelected');
+				checkboxes.each(
+					function (box) { box.checked = true; }
+				);
+				// then select the select all users checkbox
+				$('listContainer_selectAll').checked = true;
+			}
+			
 			// perform the actual search function 
 			function showUsersList()
 			{
@@ -121,11 +134,14 @@
 							// enable js evaluation of the response or the 'select all' checkbox for inventoryList won't work 
 							evalScripts : true,
 							onCreate : function () { $('searchStatus').update("Searching, please wait..."); },
-							onComplete : function () { $('searchStatus').update(); },
+							onComplete : function () 
+							{ 
+								$('searchStatus').update(); 
+								selectAllCheckboxes();
+							},
 						});
 			}
 		</script>
 	</bbNG:jsBlock>
 
 </bbNG:includedPage>
-
