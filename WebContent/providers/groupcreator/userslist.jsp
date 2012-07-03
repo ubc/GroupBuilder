@@ -52,10 +52,10 @@
 		<bbNG:listElement label="Student ID" name="studentId" isRowHeader="true">
              ${user.studentId}
         </bbNG:listElement>
-		<bbNG:listElement label="Family Name" name="familyName">
+		<bbNG:listElement label="Last Name" name="familyName">
              ${user.familyName}
         </bbNG:listElement>
-		<bbNG:listElement label="Given Name" name="givenName">
+		<bbNG:listElement label="First Name" name="givenName">
              ${user.givenName}
         </bbNG:listElement>
 		<c:forEach var="fields" items="${user.searchFields}">
