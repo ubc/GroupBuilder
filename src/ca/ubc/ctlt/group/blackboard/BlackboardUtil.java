@@ -115,7 +115,7 @@ public class BlackboardUtil
 		return sets;
 	}
 	
-	protected List<Group> getAllBbGroups(Id courseId) throws PersistenceException {
+	public List<Group> getAllBbGroups(Id courseId) throws PersistenceException {
 		List<Group> courseGroups = null;
 		GroupDbLoader groupLoader =  GroupDbLoader.Default.getInstance();
 		courseGroups = groupLoader.loadByCourseId(courseId);
