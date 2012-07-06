@@ -20,4 +20,14 @@ public abstract class Provider extends ManagedObject
 	{
 		return false;
 	}
+	
+	public boolean canProvideGroupSet()
+	{
+		return true;
+	}
+	
+	public boolean canProvideMultipleGroups() 
+	{
+		return true;
+	}
 }

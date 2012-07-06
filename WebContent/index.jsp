@@ -54,6 +54,7 @@ Class<Consumer>[] consumers = manager.getConsumers();
 int i;
  %>
 
+<hr />
 <h1>Manual Configuration</h1>
 <bbNG:form action="options.jsp" method="post">
 <bbNG:dataCollection>

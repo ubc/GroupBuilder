@@ -13,6 +13,15 @@ public abstract class ManagedObject {
 	protected HashMap<String, GroupSet> sets;
 	protected List<String> logs = new ArrayList<String>();
 	protected List<String> errors = new ArrayList<String>();
+	protected Manager manager = null;
+
+	public Manager getManager() {
+		return manager;
+	}
+
+	public void setManager(Manager manager) {
+		this.manager = manager;
+	}
 
 	public void setRequest(HttpServletRequest request) {
 		this.request = request;

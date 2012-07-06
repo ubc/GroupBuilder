@@ -13,18 +13,19 @@
 	</bbNG:pageHeader>
 	
 	<%
-	Class p = Class.forName(request.getParameter("provider"));
+	Manager manager = new Manager(request, response);
+/* 	Class p = Class.forName(request.getParameter("provider"));
 	Provider provider = (Provider)p.newInstance();
 	Class c = Class.forName(request.getParameter("consumer"));
 	Consumer consumer  = (Consumer)c.newInstance();
 	provider.setRequest(request);
 	provider.setResponse(response);
 	consumer.setRequest(request);
-	consumer.setResponse(response);
-	pageContext.setAttribute("provider", provider);
-	pageContext.setAttribute("consumer", consumer);
+	consumer.setResponse(response); */
+	pageContext.setAttribute("provider", manager.getProvider(), pageContext.REQUEST_SCOPE);
+	pageContext.setAttribute("consumer", manager.getConsumer(), pageContext.REQUEST_SCOPE);
 	pageContext.setAttribute("enctype", "application/x-www-form-urlencoded");
-	if (provider.hasFileUpload())
+	if (manager.getProvider().hasFileUpload())
 	{
 		pageContext.setAttribute("enctype", "multipart/form-data");
 	}
@@ -37,7 +38,7 @@
 				<jsp:include page="${provider.optionsPage}" flush="true" />
 			</bbNG:step>
 			
-			<bbNG:step title="${consumer.name} Provider - ${consumer.description}">
+			<bbNG:step title="${consumer.name} Consumer - ${consumer.description}">
 				<jsp:include page="${consumer.optionsPage}" flush="true" />
 			</bbNG:step>
 			

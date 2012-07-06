@@ -41,8 +41,10 @@ public class Manager {
 		
 		provider.setRequest(request);
 		provider.setResponse(response);
+		provider.setManager(this);
 		consumer.setRequest(request);
 		consumer.setResponse(response);
+		consumer.setManager(this);
 	}
 
 	public Provider getProvider() {

@@ -55,4 +55,13 @@ public class GroupCreatorProvider extends Provider
 		return "Create a group based on grade center fields.";
 	}
 
+	@Override
+	public boolean canProvideGroupSet() {
+		return false;
+	}
+
+	@Override
+	public boolean canProvideMultipleGroups() {
+		return false;
+	}
 }
