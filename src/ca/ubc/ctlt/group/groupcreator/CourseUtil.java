@@ -447,6 +447,16 @@ public class CourseUtil
 		// and for some reason, you need to get the sql connection as a parameter for the heavyweight method call.
 		Connection db = JdbcServiceFactory.getInstance().getDefaultDatabase()
 				.getConnectionManager().getConnection();
-		return loader.loadByCourseId(ctx.getCourseId(), db, true);
+		ArrayList<CourseMembership> members = loader.loadByCourseId(ctx.getCourseId(), db, true);
+		ArrayList<CourseMembership> ret = new ArrayList<CourseMembership>();
+		for (CourseMembership membership : members)
+		{
+			debug += "member: " + membership.getUser().getUserName() + " " + membership.getIsAvailable() + "\n";
+			if (membership.getIsAvailable())
+			{
+				ret.add(membership);
+			}
+		}
+		return ret;
 	}
 }
