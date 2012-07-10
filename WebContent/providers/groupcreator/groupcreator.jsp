@@ -81,7 +81,9 @@
 </li>
 <li>
 	<div id="userlists">
-		<jsp:include page="userslist.jsp" flush="true" />
+		<jsp:include page="userslist.jsp" flush="true">
+			<jsp:param name="clearSearch" value="true" />
+		</jsp:include>
 	</div>
 </li>
 <li>

@@ -15,7 +15,14 @@
 		String combinationOp = request.getParameter("combinationOp");
 		ArrayList<SearchCriteria> criterias = new ArrayList<SearchCriteria>();
 		
-		// to do a search, must have all params
+		// we're using session to store previous search results in order for sorting to work
+		// this parameter tells us to clear the session
+		String clearSearch = request.getParameter("clearSearch");
+		if (clearSearch != null)
+		{
+			session.removeAttribute("GroupCreatorProviderCriterias");	
+		}
+		// check to see if we need to convert the search parameters into search criterias
 		if (fields != null && ops != null && terms != null && combinationOp != null) 
 		{
 			// and since field, term, and ops should have 1:1:1 correspondence, their arrays must be of the
@@ -28,6 +35,16 @@
 			for (int i = 0; i < fields.length; i++)
 			{
 				criterias.add(new SearchCriteria(fields[i], ops[i], terms[i]));
+			}
+			// store the search criterias in the session
+			session.setAttribute("GroupCreatorProviderCriterias", criterias);
+		}
+		else
+		{ // try to restore the previous search criterias from the session 
+			criterias = (ArrayList<SearchCriteria>) session.getAttribute("GroupCreatorProviderCriterias");
+			if (criterias == null)
+			{
+				criterias = new ArrayList<SearchCriteria>();
 			}
 		}
 		
@@ -47,15 +64,15 @@
 	
 	<bbNG:inventoryList collection="${usersList}" objectVar="user"
 		className="UserWrapper" description="List of users in this course."
-		showAll="true">
+		initialSortCol="familyName" renderAjax="true" showAll="true">
 		<bbNG:listCheckboxElement name="usersSelected" value="${user.userName}" />
-		<bbNG:listElement label="Student ID" name="studentId" isRowHeader="true">
+		<bbNG:listElement label="Student ID" name="studentId" isRowHeader="true" comparator="${user.cmStudentId}">
              ${user.studentId}
         </bbNG:listElement>
-		<bbNG:listElement label="Last Name" name="familyName">
+		<bbNG:listElement label="Last Name" name="familyName" comparator="${user.cmFamilyName}">
              ${user.familyName}
         </bbNG:listElement>
-		<bbNG:listElement label="First Name" name="givenName">
+		<bbNG:listElement label="First Name" name="givenName" comparator="${user.cmGivenName}">
              ${user.givenName}
         </bbNG:listElement>
 		<c:forEach var="fields" items="${user.searchFields}">
@@ -63,7 +80,7 @@
 				${fields.value}
 	        </bbNG:listElement>
 		</c:forEach>
-		<bbNG:listElement label="Role" name="roleName">
+		<bbNG:listElement label="Role" name="roleName" comparator="${user.cmRole}">
              ${user.role}
         </bbNG:listElement>
 	</bbNG:inventoryList>

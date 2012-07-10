@@ -2,6 +2,7 @@ package ca.ubc.ctlt.group.groupcreator;
 
 import java.util.LinkedHashSet;
 
+import blackboard.base.GenericFieldComparator;
 import blackboard.data.course.CourseMembership;
 import blackboard.data.user.User;
 
@@ -17,6 +18,18 @@ public class UserWrapper
 	private CourseMembership member;
 	private User user;
 	private LinkedHashSet<SearchFieldInfo> searchFields = new LinkedHashSet<SearchFieldInfo>();
+	
+	// stupid boiler plate needed to sort inventoryList columns
+	private static GenericFieldComparator<UserWrapper> cmUserName = 
+			new GenericFieldComparator<UserWrapper>("getUserName", UserWrapper.class);
+	private static GenericFieldComparator<UserWrapper> cmGivenName = 
+			new GenericFieldComparator<UserWrapper>("getGivenName", UserWrapper.class);
+	private static GenericFieldComparator<UserWrapper> cmFamilyName = 
+			new GenericFieldComparator<UserWrapper>("getFamilyName", UserWrapper.class);
+	private static GenericFieldComparator<UserWrapper> cmStudentId = 
+			new GenericFieldComparator<UserWrapper>("getStudentId", UserWrapper.class);
+	private static GenericFieldComparator<UserWrapper> cmRole = 
+			new GenericFieldComparator<UserWrapper>("getRole", UserWrapper.class);
 	
 	/**
 	 * @param member
@@ -110,4 +123,43 @@ public class UserWrapper
 		return true;
 	}
 
+	/**
+	 * @return the cmUserName
+	 */
+	public GenericFieldComparator<UserWrapper> getCmUserName()
+	{
+		return cmUserName;
+	}
+
+	/**
+	 * @return the cmGivenName
+	 */
+	public GenericFieldComparator<UserWrapper> getCmGivenName()
+	{
+		return cmGivenName;
+	}
+
+	/**
+	 * @return the cmFamilyName
+	 */
+	public GenericFieldComparator<UserWrapper> getCmFamilyName()
+	{
+		return cmFamilyName;
+	}
+
+	/**
+	 * @return the cmStudentId
+	 */
+	public GenericFieldComparator<UserWrapper> getCmStudentId()
+	{
+		return cmStudentId;
+	}
+
+	/**
+	 * @return the cmRole
+	 */
+	public GenericFieldComparator<UserWrapper> getCmRole()
+	{
+		return cmRole;
+	}
 }
