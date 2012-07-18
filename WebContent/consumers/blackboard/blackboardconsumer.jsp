@@ -11,7 +11,6 @@
 
 <bbNG:jspBlock>
 <%
-String log = "";
 BlackboardUtil bbutil = new BlackboardUtil(ctx);
 ArrayList<GroupWrapper> wrappers = new ArrayList<GroupWrapper>();
 List<Group> groups = bbutil.getAllBbGroups(ctx.getCourseId());
@@ -20,45 +19,76 @@ for (Group group : groups)
 	wrappers.add(new GroupWrapper(group));
 }
 pageContext.setAttribute("groups", wrappers);
-pageContext.setAttribute("log", log);
 %>
 </bbNG:jspBlock>
-<pre>
-${log}
-</pre>
-
 
 <ol>
 	<li>
-	<bbNG:selectElement name="blackboardConsumerOperation" isRequired="true" onchange="toggleExistingGroups();">
+	<bbNG:selectElement name="blackboardConsumerOperation" isRequired="true" onchange="toggleExistingGroups(); return false;">
 		<bbNG:selectOptionElement value="create" optionLabel="Create New Group" />
 		<bbNG:selectOptionElement value="add" optionLabel="Add to Existing Group" />
 	</bbNG:selectElement>
 	</li>
 
-	<li id="existingGroups" style="display:none;">
-	<bbNG:selectElement name="blackboardConsumerGroupSelection" isRequired="true">
+	<li id="bbConsumerExistingGroups" style="display:none;">
+	<bbNG:selectElement name="blackboardConsumerGroupSelection" isRequired="true" onchange="showUsersList(); return false;">
 		<c:forEach var="group" items="${groups}">
 			<bbNG:selectOptionElement value="${group.idStr}" optionLabel="${group.title}" />
 		</c:forEach>
 	</bbNG:selectElement>
+	<p>
+	Note: The group name you selected here will overwrite the group name given above.
+	</p>
+	</li>
+	<li id="bbConsumerGroup">
+		<span id="bbConsumerViewStatus"></span>
+		<h3>Existing Users in Group</h3>
+		<div id="bbConsumerGroupView">
+		</div>
 	</li>
 </ol>
 
 <bbNG:jsBlock>
 <script type="text/javascript">
+// hide the group viewer on page load 
+$('bbConsumerGroup').hide();
+
 function toggleExistingGroups()
 {
 	var select = $('blackboardConsumerOperation');
 	if (select[select.selectedIndex].value == "add")
 	{
-		$('existingGroups').show();
+		$('bbConsumerExistingGroups').show();
+		$('bbConsumerGroup').show();
+		showUsersList(); // need to init the group users display 
 	}
 	else
 	{
-		$('existingGroups').hide();
+		$('bbConsumerExistingGroups').hide();
+		$('bbConsumerGroup').hide();
 	}
 }
+function showUsersList()
+{
+	console.log("Called!");
+	// lazy way to get all the search parameters, just grab 
+	// ALL the form parameters.
+	var params = document.forms[0].serialize(true);
+	// need to add course_id for BBL to know where it is 
+	new Ajax.Updater('bbConsumerGroupView',
+			'consumers/blackboard/groupview.jsp',
+			{
+				parameters : params,
+				// enable js evaluation of the response or the 'select all' checkbox for inventoryList won't work 
+				evalScripts : true,
+				onCreate : function () { $('bbConsumerViewStatus').update("Searching, please wait..."); },
+				onComplete : function () 
+				{ 
+					$('bbConsumerViewStatus').update(); 
+				},
+			});
+}
+
 </script>
 </bbNG:jsBlock>
 

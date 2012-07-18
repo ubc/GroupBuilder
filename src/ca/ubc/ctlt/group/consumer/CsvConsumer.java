@@ -54,7 +54,7 @@ public class CsvConsumer extends Consumer {
 	@Override
 	public String getOptionsPage()
 	{
-		return "consumers/csv/options.html";
+		return "consumers/csv/csvconsumers.jsp";
 	}
 
 	@Override

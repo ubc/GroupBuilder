@@ -3,10 +3,7 @@ package ca.ubc.ctlt.group.groupcreator;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.sql.Connection;
-
-
 
 import blackboard.data.course.CourseMembership;
 import blackboard.data.gradebook.Lineitem;

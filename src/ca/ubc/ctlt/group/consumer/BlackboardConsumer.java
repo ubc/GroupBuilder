@@ -34,6 +34,13 @@ public class BlackboardConsumer extends Consumer {
 	private int numGroups = 0;
 	private Group lastGroup = null;
 	
+	/**
+	 * If only 1 group was created, redirect user to that group's view page. If multiple groups
+	 * were created, redirect user to the groups list page.
+	 * 
+	 * @param courseId - the course that the groups just created live in.
+	 * @throws IOException - Redirect failed
+	 */
 	public void goodbye(Id courseId) throws IOException {
 		if (lastGroup == null)
 		{ // do nothing if an error happened
@@ -109,6 +116,18 @@ public class BlackboardConsumer extends Consumer {
 					.getGroups().entrySet()) {
 				ca.ubc.ctlt.group.Group group = entry1.getValue();
 
+				// The 'add' operation means the user wants to add users to an existing group.
+				// We ignore the group name supplied by the provider and replace it with
+				// the name the user gave to the consumer instead.
+				String op = request.getParameter("blackboardConsumerOperation");
+				log("Group operation: " + op);
+				if (op.equals("add")) {
+					String groupId = request.getParameter("blackboardConsumerGroupSelection");
+					Group tmp = groupLoader.loadById(Id.generateId(Group.DATA_TYPE, groupId));
+					log("Adding to Group, Id: " + groupId + " Title: " + tmp.getTitle());
+					group.setName(tmp.getTitle());
+				}
+				
 				log("Processing group: " + group.getName());
 				
 				// creating or getting group from database

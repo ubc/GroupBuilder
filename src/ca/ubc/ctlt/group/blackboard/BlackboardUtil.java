@@ -1,5 +1,7 @@
 package ca.ubc.ctlt.group.blackboard;
 
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -10,14 +12,20 @@ import javax.servlet.http.HttpServletRequest;
 import ca.ubc.ctlt.group.GroupSet;
 
 import blackboard.base.InitializationException;
+import blackboard.data.course.CourseMembership;
 import blackboard.data.course.Group;
+import blackboard.data.course.GroupMembership;
+import blackboard.data.user.User;
+import blackboard.db.ConnectionNotAvailableException;
 import blackboard.persist.Id;
 import blackboard.persist.PersistenceException;
+import blackboard.persist.course.CourseMembershipDbLoader;
 import blackboard.persist.course.GroupDbLoader;
 import blackboard.platform.BbServiceException;
 import blackboard.platform.BbServiceManager;
 import blackboard.platform.context.Context;
 import blackboard.platform.context.ContextManager;
+import blackboard.platform.db.JdbcServiceFactory;
 
 public class BlackboardUtil
 {
@@ -122,4 +130,31 @@ public class BlackboardUtil
 		return courseGroups;
 	}
 	
+	public List<User> getUsers(String groupId) throws PersistenceException, ConnectionNotAvailableException {
+		// To get a list of users in a group, we have to traverse a hierarchy of data relations.
+		// The hierarchy goes Group -> GroupMembership -> CourseMembership -> User
+		
+		// First, we get the Group
+		GroupDbLoader gLoader = GroupDbLoader.Default.getInstance();
+		Group group = gLoader.loadById(Id.generateId(Group.DATA_TYPE, groupId));
+		// Then we get the list of GroupMemberships in the Group
+		List<GroupMembership> groupMembers = group.getGroupMemberships();
+		
+		// From each GroupMembership, we can get the CourseMembership
+		CourseMembershipDbLoader cmLoader = CourseMembershipDbLoader.Default.getInstance();
+		Connection db = JdbcServiceFactory.getInstance().getDefaultDatabase()
+				.getConnectionManager().getConnection();
+		ArrayList<CourseMembership> courseMembers = new ArrayList<CourseMembership>();
+		for (GroupMembership gmember : groupMembers) {
+			CourseMembership cmember = cmLoader.loadById(gmember.getCourseMembershipId(), db, true);
+			courseMembers.add(cmember);
+		}
+		
+		// Then, finally, from the CourseMembership, we can get the Users
+		ArrayList<User> ret = new ArrayList<User>();
+		for (CourseMembership member : courseMembers) {
+			ret.add(member.getUser());
+		}
+		return ret;
+	}
 }
