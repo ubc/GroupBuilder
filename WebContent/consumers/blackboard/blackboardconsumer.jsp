@@ -68,6 +68,7 @@ function toggleExistingGroups()
 		$('bbConsumerGroup').hide();
 	}
 }
+
 function showUsersList()
 {
 	console.log("Called!");
