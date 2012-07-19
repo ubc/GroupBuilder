@@ -9,7 +9,7 @@
 	<style type="text/css">
 	#groupslist ul, #groupslist ol
 	{
-		margin-left: 1em;
+		margin-left: 2em;
 		list-style-position: inside;
 	}
 	
@@ -48,7 +48,6 @@
 	{
 		for (Map.Entry<String, GroupSet> setEntry : sets.entrySet())
 		{
-			out.println("<h3>" + setEntry.getKey() + "</h3>");
 			out.println("<ul>");
 			for (Map.Entry<String, Group> groupEntry : setEntry.getValue().getGroups().entrySet())
 			{

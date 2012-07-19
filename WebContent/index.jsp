@@ -28,14 +28,20 @@
 }
 #tinyfootnote
 {
-margin-top: 1em;
-font-size: 0.7em;
-text-align: center;
-color: #aaa;
+	margin-top: 1em;
+	font-size: 0.7em;
+	text-align: center;
+	color: #aaa;
 }
 #tinyfootnote a:link, #tinyfootnote a:visited
 {
-color: #888;
+	color: #888;
+}
+/* Cause  */
+select
+{
+	margin-left: 2em;
+	margin-bottom: 2em;
 }
 </style>
 
@@ -65,7 +71,6 @@ int i;
 			<% } %>
 		</select>
 	</bbNG:step>
-
 	<bbNG:step title="Consumer">
 		<select name="consumer" id="consumersList" >
 			<% for (i=0; i < consumers.length; i++) { %>
