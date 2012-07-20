@@ -7,7 +7,7 @@
 
 <bbNG:learningSystemPage ctxId="ctx">
 	
-	<bbNG:pageHeader instructions="Please follow the steps">
+	<bbNG:pageHeader instructions="Please Follow the Steps">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
 		title="GroupBuilder"/>
 	</bbNG:pageHeader>

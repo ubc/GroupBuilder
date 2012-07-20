@@ -4,16 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import blackboard.cms.filesystem.CSContext;
-import blackboard.cms.filesystem.CSFile;
 import blackboard.cms.filesystem.CSFileSystemException;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -73,6 +69,7 @@ public class CsvConsumer extends Consumer {
 	 */
 	private void saveToCS(List<String[]> data) throws IOException
 	{
+		log("Saving to Content Collection");
 		// Process the data into a CSV format. We use the CSVWriter to write to an OutputStream
 		// which we later put into an InputStream for the CSContext to use in file creation.
 		ByteArrayOutputStream csvOutput = new ByteArrayOutputStream();
@@ -87,12 +84,13 @@ public class CsvConsumer extends Consumer {
 			String fileName = request.getParameter("csvExportName");
 			String path = request.getParameter("csvExportCSFolder_CSFile");
 			CSContext csCtx = CSContext.getContext();
-			CSFile file = csCtx.createFile(path, fileName, input, true);
+			csCtx.createFile(path, fileName, input, true);
 		}
 		catch (CSFileSystemException e) 
 		{
 			// Couldn't create the file for some reason
-			log(e.getMessage());
+			error("Couldn't creat the file, did you select a directory?");
+			error(e.getMessage());
 		}
 	}
 	
@@ -105,6 +103,7 @@ public class CsvConsumer extends Consumer {
 	 */
 	private void downloadCSV(List<String[]> data) throws IOException 
 	{
+		log("Downloading Export");
 		byte[] rawFileName = request.getParameter("csvExportName").getBytes();
 		// IE8 and below doesn't support UTF-8 filenames, downconvert to latin-1
 		String fileName = new String(rawFileName, "ISO-8859-1");

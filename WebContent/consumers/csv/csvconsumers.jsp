@@ -58,7 +58,6 @@ function csvExportToggleOperation()
 	if (select[select.selectedIndex].value == "cs")
 	{
 		$('csvExportCSOption').show();
-		showUsersList(); // need to init the group users display 
 	}
 	else
 	{
