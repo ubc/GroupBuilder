@@ -29,7 +29,7 @@ pageContext.setAttribute("bbContext", ctx);
 			</label>
 		</div>
 		<bbNG:selectElement name="csvExportOperation" isRequired="true" onchange="csvExportToggleOperation(); return false;">
-			<bbNG:selectOptionElement value="local" optionLabel="Download" />
+			<bbNG:selectOptionElement value="download" optionLabel="Download" />
 			<bbNG:selectOptionElement value="cs" optionLabel="Save as Content System File" />
 		</bbNG:selectElement>
 	</li>
@@ -50,7 +50,7 @@ pageContext.setAttribute("bbContext", ctx);
 <script type="text/javascript">
 
 // hide the content system options on intial page load 
-$('csvExportCSOption').hide();
+csvExportToggleOperation();
 
 function csvExportToggleOperation()
 {

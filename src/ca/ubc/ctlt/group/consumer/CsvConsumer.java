@@ -1,11 +1,20 @@
 package ca.ubc.ctlt.group.consumer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import blackboard.cms.filesystem.CSContext;
+import blackboard.cms.filesystem.CSFile;
+import blackboard.cms.filesystem.CSFileSystemException;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -25,20 +34,9 @@ public class CsvConsumer extends Consumer {
 			return;
 		}
 		
-		byte[] rawFileName = request.getParameter("csvExportName").getBytes();
-		// IE8 and below doesn't support UTF-8 filenames, downconvert to latin-1
-		String fileName = new String(rawFileName, "ISO-8859-1");
-		// add the .csv extension if it's not there
-		if (!fileName.endsWith(".csv")) {
-			fileName += ".csv";
-		}
-		// strip non-printable characters & http header special characters
-		fileName = sanitizeFileName(fileName);
-		
-		OutputStreamWriter steamWriter = new OutputStreamWriter(response.getOutputStream());
-		CSVWriter writer = new CSVWriter(steamWriter);
+		// process the data
 		List<String[]> data = new ArrayList<String[]>();
-		String[] header = {"GroupSet", "Group", "Student ID", fileName};
+		String[] header = {"GroupSet", "Group", "Student ID"};
 		data.add(header);
 		
 		for (Entry<String, GroupSet> entryGroupSet : sets.entrySet()) {
@@ -55,7 +53,71 @@ public class CsvConsumer extends Consumer {
 				}
 			}
 		}
+		
+		// find out if the user wants to download the file or save it to the content collection system
+		String op = request.getParameter("csvExportOperation");
+		if (op.equals("download"))
+		{
+			downloadCSV(data);
+		}
+		else
+		{
+			saveToCS(data);
+		}
+	}
+	
+	/**
+	 * Save the CSV data as a file in the Content Collection System
+	 * @param data
+	 * @throws IOException 
+	 */
+	private void saveToCS(List<String[]> data) throws IOException
+	{
+		// Process the data into a CSV format. We use the CSVWriter to write to an OutputStream
+		// which we later put into an InputStream for the CSContext to use in file creation.
+		ByteArrayOutputStream csvOutput = new ByteArrayOutputStream();
+		OutputStreamWriter streamWriter = new OutputStreamWriter(csvOutput, "UTF-8");
+		CSVWriter writer = new CSVWriter(streamWriter); // saves us the trouble of creating CSVs ourselves
+		writer.writeAll(data);
+		writer.close();
+		ByteArrayInputStream input = new ByteArrayInputStream(csvOutput.toByteArray());
+		
+		try 
+		{
+			String fileName = request.getParameter("csvExportName");
+			String path = request.getParameter("csvExportCSFolder_CSFile");
+			CSContext csCtx = CSContext.getContext();
+			CSFile file = csCtx.createFile(path, fileName, input, true);
+		}
+		catch (CSFileSystemException e) 
+		{
+			// Couldn't create the file for some reason
+			log(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Tell the User's browser to expect a file, then take the line by line CSV data and write it 
+	 * to the response stream, which means the user downloads the CSV data as a file.
+	 * 
+	 * @param data
+	 * @throws IOException
+	 */
+	private void downloadCSV(List<String[]> data) throws IOException 
+	{
+		byte[] rawFileName = request.getParameter("csvExportName").getBytes();
+		// IE8 and below doesn't support UTF-8 filenames, downconvert to latin-1
+		String fileName = new String(rawFileName, "ISO-8859-1");
+		// add the .csv extension if it's not there
+		if (!fileName.endsWith(".csv")) {
+			fileName += ".csv";
+		}
+		// strip non-printable characters & http header special characters
+		fileName = sanitizeFileName(fileName);
 
+		OutputStreamWriter streamWriter = new OutputStreamWriter(response.getOutputStream(), "UTF-8");
+		CSVWriter writer = new CSVWriter(streamWriter);
+		
 		response.setContentType("text/plain");
 		// If only IE8 & below supported standards that every single other browser supports, we'd
 		// be able to use the more elegant solution:
@@ -78,7 +140,7 @@ public class CsvConsumer extends Consumer {
      * @return
      * @throws Exception
      */
-    public String sanitizeFileName(String s) throws Exception {
+    private String sanitizeFileName(String s) {
         final int length = s.length();
         if (oldChars.length < length) {
             oldChars = new char[length];
