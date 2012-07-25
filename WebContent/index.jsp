@@ -37,13 +37,20 @@
 {
 	color: #888;
 }
-/* Cause  */
+</style>
+<!--[if (lt IE 9)]>
+<style type="text/css">
+/* IE8 CSS hacks */
+select, .ie8hacks
+{
+	margin-left: 3em;
+}
 select
 {
-	margin-left: 2em;
-	margin-bottom: 2em;
+	margin-bottom: 3em;
 }
 </style>
+<![endif]-->
 
 <h1>Shortcuts</h1>
 <ul id="shortcuts">

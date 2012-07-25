@@ -12,6 +12,7 @@ pageContext.setAttribute("bbContext", ctx);
 %>
 </bbNG:jspBlock>
 
+<div class="ie8hacks">
 <ul>
 	<li>
 		<div class="label">
@@ -45,6 +46,7 @@ pageContext.setAttribute("bbContext", ctx);
 		</bbNG:filePicker>
 	</li>
 </ul>
+</div>
 
 <bbNG:jsBlock>
 <script type="text/javascript">

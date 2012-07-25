@@ -11,6 +11,15 @@
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
 		title="GroupBuilder"/>
 	</bbNG:pageHeader>
+<!--[if (lt IE 9)]>
+<style type="text/css">
+/* IE8 CSS hacks */
+.ie8hacks
+{
+	margin-left: 3em;
+}
+</style>
+<![endif]-->
 	
 	<%
 	Manager manager = new Manager(request, response);

@@ -22,6 +22,7 @@ pageContext.setAttribute("groups", wrappers);
 %>
 </bbNG:jspBlock>
 
+<div class="ie8hacks">
 <ol>
 	<li>
 	<bbNG:selectElement name="blackboardConsumerOperation" isRequired="true" onchange="toggleExistingGroups(); return false;">
@@ -31,7 +32,7 @@ pageContext.setAttribute("groups", wrappers);
 	</li>
 
 	<li id="bbConsumerExistingGroups" style="display:none;">
-	<bbNG:selectElement name="blackboardConsumerGroupSelection" isRequired="true" onchange="showUsersList(); return false;">
+	<bbNG:selectElement name="blackboardConsumerGroupSelection" isRequired="true" onchange="bbConsumerShowUsersList(); return false;">
 		<c:forEach var="group" items="${groups}">
 			<bbNG:selectOptionElement value="${group.idStr}" optionLabel="${group.title}" />
 		</c:forEach>
@@ -47,6 +48,7 @@ pageContext.setAttribute("groups", wrappers);
 		</div>
 	</li>
 </ol>
+</div>
 
 <bbNG:jsBlock>
 <script type="text/javascript">
@@ -60,7 +62,7 @@ function toggleExistingGroups()
 	{
 		$('bbConsumerExistingGroups').show();
 		$('bbConsumerGroup').show();
-		showUsersList(); // need to init the group users display 
+		bbConsumerShowUsersList(); // need to init the group users display 
 	}
 	else
 	{
@@ -69,24 +71,23 @@ function toggleExistingGroups()
 	}
 }
 
-function showUsersList()
+function bbConsumerShowUsersList()
 {
-	console.log("Called!");
-	// lazy way to get all the search parameters, just grab 
-	// ALL the form parameters.
-	var params = document.forms[0].serialize(true);
 	// need to add course_id for BBL to know where it is 
 	new Ajax.Updater('bbConsumerGroupView',
 			'consumers/blackboard/groupview.jsp',
 			{
-				parameters : params,
+				parameters : {
+					'blackboardConsumerOperation': $F('blackboardConsumerOperation'), 
+					'blackboardConsumerGroupSelection' : $F('blackboardConsumerGroupSelection')
+				},
 				// enable js evaluation of the response or the 'select all' checkbox for inventoryList won't work 
 				evalScripts : true,
 				onCreate : function () { $('bbConsumerViewStatus').update("Searching, please wait..."); },
 				onComplete : function () 
 				{ 
 					$('bbConsumerViewStatus').update(); 
-				},
+				}
 			});
 }
 

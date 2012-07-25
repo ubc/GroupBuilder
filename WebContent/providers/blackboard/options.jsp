@@ -24,7 +24,7 @@
 	}
 	</style>
 
-	<div id="groupslist">
+	<div id="groupslist" class="ie8hacks">
 	<bbNG:jspBlock>
 	<%
 	HashMap<String, GroupSet> sets = null;
