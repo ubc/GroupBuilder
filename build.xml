@@ -1,32 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="ubc-GroUP Building Block" default="deploy-b2" basedir=".">
-    <description>TODO Description For My Project</description>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="Group Building Block by UBC" default="dist" basedir=".">
+    <description>Group Building Block for Blackboard Learn 9</description>
 
-    <property name="build.dir" value="${basedir}/build/"/>
-    <property name="b2.package.name" value="${basedir}/build/ubc-GroUP"/>
-    <property name="src" value="${basedir}/src"/>
-    <property name="web" value="${basedir}/WebContent"/>
-    <property name="classdir" value="${basedir}/bin"/>
+    <property file="build.properties" />
 
-    <target name="build" >
-        <javac srcdir="${src}" destdir="${classdir}" debug="true" includes="**/*.java" />
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
     </target>
 
-    <target name="deploy-b2" depends="package-war">
+    <target name="install-ivy" description="install the ivy task jar">
+        <mkdir dir="${user.home}/.ant/lib"/>
+        <get dest="${user.home}/.ant/lib/ivy.jar" src="http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"/>
+    </target>
+
+    <target name="resolve" description="retrieve dependencies with ivy">
+        <ivy:retrieve />
+    </target>
+
+    <target name="compile" depends="init, resolve">
+        <javac srcdir="${src}" destdir="${build}" debug="true" includes="**/*.java" includeantruntime="false">
+            <classpath>
+                <fileset dir="lib/"/>
+                <fileset dir="${bbsdk}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="deploy" depends="dist">
         <taskdef name="b2deploy" classpath="${basedir}/lib/b2deploy-task.jar" classname="org.oscelot.ant.B2DeployTask" />
-        <b2deploy localfilepath="${build.dir}/${b2.package.name}.war" host="127.0.0.1" courseorgavailable="true" clean="true" />
+        <b2deploy localfilepath="${dist}/${b2.package.name}.war" host="192.168.56.101" courseorgavailable="true" clean="true" />
     </target>
 
-    <target name="package-war">
-        <war destfile="${b2.package.name}.war" basedir="WebContent">
-            <classes dir="bin"></classes>
+    <target name="dist" depends="compile">
+        <mkdir dir="${dist}" />
+        <war destfile="${dist}/${b2.package.name}.war" basedir="WebContent">
+            <classes dir="${build}"></classes>
         </war>
     </target>
 
-
     <target name="check-compatibility">
         <taskdef name="fibbba" classname="com.blackboard.fibbba.CheckFibbbaTask" classpath="${basedir}/lib/fibbba-ant.jar" />
-        <fibbba srcfile="${b2.package.name}.war" email="pan.luo@ubc.ca"/>
+        <fibbba srcfile="${dist}/${b2.package.name}.war" email="pan.luo@ubc.ca"/>
+    </target>
+
+    <target name="clean" description="clean up">
+        <delete dir="${build}" />
+        <delete dir="${dist}" />
+        <delete dir="lib/">
+            <exclude name="b2deploy-task.jar" />
+            <exclude name="fibbba-ant.jar" />
+        </delete>
     </target>
 
 </project>
