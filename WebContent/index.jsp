@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	import="ca.ubc.ctlt.group.*,java.util.*,blackboard.platform.*,blackboard.data.user.*,blackboard.persist.*,blackboard.persist.user.*,blackboard.data.course.*,blackboard.persist.course.*,blackboard.data.content.*,blackboard.base.*"%>
@@ -15,7 +16,7 @@
 <style type="text/css">
 #shortcuts
 {
-	margin-bottom: 3em;
+	margin-bottom: 7em;
 }
 #shortcuts li
 {
@@ -28,7 +29,7 @@
 }
 #tinyfootnote
 {
-	margin-top: 1em;
+	margin-top: 5em;
 	font-size: 0.7em;
 	text-align: center;
 	color: #aaa;
@@ -36,6 +37,11 @@
 #tinyfootnote a:link, #tinyfootnote a:visited
 {
 	color: #888;
+}
+
+#advancedOptionsToggle
+{
+	font-size: 0.9em;
 }
 </style>
 <!--[if (lt IE 9)]>
@@ -52,7 +58,7 @@ select
 </style>
 <![endif]-->
 
-<h1>Shortcuts</h1>
+<h1>Options</h1>
 <ul id="shortcuts">
 <li><a href='#' onclick="shortcut('group');">GroupCreator</a> - Create groups based on grade center columns.</li>
 <li><a href='#' onclick="shortcut('import');">CSV Import</a> - Create groups from a CSV file.</li>
@@ -67,8 +73,9 @@ Class<Consumer>[] consumers = manager.getConsumers();
 int i;
  %>
 
-<hr />
-<h1>Manual Configuration</h1>
+<p id="advancedOptionsToggle"><a href="#" onclick="$('advancedOptions').toggle(); return false;">Advanced Configuration</a></p>
+<div id="advancedOptions">
+<h1>Advanced Configuration</h1>
 <bbNG:form action="options.jsp" method="post">
 <bbNG:dataCollection>
 	<bbNG:step title="Provider">
@@ -89,10 +96,14 @@ int i;
 	<bbNG:stepSubmit/>
 </bbNG:dataCollection>
 </bbNG:form>
+</div>
 
 <!-- Shortcut javascript -->
 <bbNG:jsBlock>
 <script type="text/javascript">
+// hide the advanced options initially 
+$('advancedOptions').toggle();
+
 function selectOption(selectId, optionVal)
 {
 	var options = $$('select#' + selectId + ' option');
