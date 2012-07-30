@@ -46,9 +46,9 @@ public class GradeCenterUtil
 		ArrayList<LineitemWrapper> ret = new ArrayList<LineitemWrapper>();
 		for (Lineitem item : list)
 		{
-			// exclude calculated columns such as "Total" and "Weighted Average",
-			// since they don't have Score entries, we can't sort on them
-			if (!item.getScores().isEmpty())
+			// skip calculated columns because they have no score entries 
+			// getOutcomeDefinition() is one of those stupid undocumentated API calls
+			if (!item.getOutcomeDefinition().isCalculated())
 			{
 				ret.add(new LineitemWrapper(item));
 			}
