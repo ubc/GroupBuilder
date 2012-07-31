@@ -4,11 +4,25 @@
 
     <property file="build.properties" />
 
+    <path id="classpath.base">
+        <fileset dir="lib/"/>
+        <fileset dir="${bbsdk}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.test">
+        <pathelement location="${build}"/>
+    	<pathelement location="${build.test}"/>
+        <path refid="classpath.base" />
+    </path>
+
     <target name="init">
         <!-- Create the time stamp -->
         <tstamp/>
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${build}"/>
+        <mkdir dir="${build.test}"/>
     </target>
 
     <target name="install-ivy" description="install the ivy task jar">
@@ -22,10 +36,13 @@
 
     <target name="compile" depends="init, resolve">
         <javac srcdir="${src}" destdir="${build}" debug="true" includes="**/*.java" includeantruntime="false">
-            <classpath>
-                <fileset dir="lib/"/>
-                <fileset dir="${bbsdk}"/>
-            </classpath>
+            <classpath refid="classpath.base"/>
+        </javac>
+    </target>
+
+    <target name="compile-test" depends="compile">
+        <javac srcdir="${src.test}" destdir="${build.test}" debug="true" includes="**/*.java" includeantruntime="false">
+            <classpath refid="classpath.test"/>
         </javac>
     </target>
 
@@ -48,6 +65,7 @@
 
     <target name="clean" description="clean up">
         <delete dir="${build}" />
+        <delete dir="${build.test}" />
         <delete dir="${dist}" />
         <delete dir="lib/">
             <exclude name="b2deploy-task.jar" />
@@ -55,4 +73,26 @@
         </delete>
     </target>
 
+    <target name="test" description="unit test" depends="compile-test">
+        <junit printsummary="yes">
+            <classpath refid="classpath.test"/>
+            <formatter type="brief" usefile="false" />
+            <test name="ca.ubc.ctlt.group.ManagerTest"/>
+        </junit>
+    </target>
+
+    <target name="test-ci" description="unit test for ci server" depends="compile-test">
+        <mkdir dir="${reports.test}"/>
+        <junit printsummary="yes" haltonfailure="yes" showoutput="no">
+            <classpath refid="classpath.test"/>
+            <formatter type="xml"/> 
+            <batchtest haltonfailure="no" fork="yes" todir="${reports.test}"> 
+                <fileset dir="${build.test}"> 
+                    <include name="**/*.class" /> 
+                </fileset> 
+            </batchtest> 
+        </junit>
+    </target>
+
+    <target name="run-ci" description="run all tasks for ci server" depends="test-ci"/>
 </project>

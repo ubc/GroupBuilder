@@ -4,5 +4,6 @@
     <dependencies>
         <dependency org="javax.servlet" name="servlet-api" rev="2.4"/>
         <dependency org="junit" name="junit" rev="4.10"/>
+        <dependency org="org.mockito" name="mockito-all" rev="1.9.5-rc1"/>
     </dependencies>
 </ivy-module>
