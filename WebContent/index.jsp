@@ -64,7 +64,7 @@ select
 
 <h1>Select An Option</h1>
 <ul id="shortcuts">
-<li><a href='#' onclick="shortcut('group');">GroupCreator</a> - Create groups based on grade center columns.</li>
+<li><a href='#' onclick="shortcut('group');">GroupCreator</a> - Specify group enrolment by filtering students based on grade center fields.</li>
 <li><a href='#' onclick="shortcut('import');">CSV Import</a> - Create groups from a CSV file.</li>
 <li><a href='#' onclick="shortcut('export');">CSV Export</a> - Export existing groups into a CSV file.</li>
 <li>
