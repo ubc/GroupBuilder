@@ -2,4 +2,5 @@ bin/
 dist/
 build/
 lib/servlet-api*
+lib/*.jar
 *.swp
