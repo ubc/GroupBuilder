@@ -159,7 +159,7 @@ public class CsvProvider extends Provider {
 	@Override
 	public String getDescription()
 	{
-		return "Providing group information from CSV file.";
+		return "Reads in group information from a CSV file.";
 	}
 	
 	/* (non-Javadoc)

@@ -175,7 +175,7 @@ public class CsvConsumer extends Consumer {
 	@Override
 	public String getDescription()
 	{
-		return "Exporting group to CSV file.";
+		return "Exports group information to a CSV file.";
 	}
 
 }

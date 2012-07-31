@@ -37,7 +37,7 @@ public class BlackboardProvider extends Provider {
 	@Override
 	public String getDescription()
 	{
-		return "Providing group information from Blackboard Learn.";
+		return "Read group information for this course from Blackboard Learn.";
 	}
 
 }

@@ -222,6 +222,6 @@ public class BlackboardConsumer extends Consumer {
 	@Override
 	public String getDescription()
 	{
-		return "Creating group for Blackboard Learn.";
+		return "Create groups in Blackboard Learn.";
 	}
 }
