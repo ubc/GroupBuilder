@@ -15,6 +15,12 @@
 {
 	list-style:	decimal inside;
 }
+#gcNameWarning
+{
+	font-weight: bold;
+	color: red;
+	margin: 0.5em 0;
+}
 </style>
 
 <div class="ie8hacks">
@@ -33,7 +39,8 @@
 			Name
 			</label>
 		</div>
-		<bbNG:textElement name="name" isRequired="true" />
+		<bbNG:textElement name="name" isRequired="true" onkeypress="gcCheckName();" />
+		<p id="gcNameWarning"></p>
 	</li> 
 </ul>
 <h3 class="steptitle">Search</h3>
@@ -52,6 +59,7 @@
 		<bbNG:jspBlock>
 		<%
 		GradeCenterUtil gc = new GradeCenterUtil(ctx);
+		CourseUtil cc = new CourseUtil(ctx);
 		out.print("<select name=\"searchField\" >");
 		for (LineitemWrapper c : gc.getLineitemColumns())
 		{
@@ -62,6 +70,7 @@
 			out.print("<option value=" + c.getKey() + ">" + c.getValue() + "</option>");
 		}
 		out.print("</select>");
+		pageContext.setAttribute("gcGroupsList", cc.getGroupsJSON());	
 		%>
 		</bbNG:jspBlock>
 		<bbNG:selectElement name="searchOp" isRequired="true">
@@ -100,7 +109,55 @@
 
 <bbNG:jsBlock>
 <script type="text/javascript">
+
+	// Due to how group names being the unique identifier for groups, 
+	// if the user gives a group name that is already taken,
+	// it'll do a group merge with the selected users instead of 
+	// creating a new group. Sometimes, this behaviour may be 
+	// desired, so we'll just warn the user if they use a group name 
+	// that already exists. 
+	// 
+	// We'll wait at least 1 second after the user stopped typing to check
+	// if the group name is a duplicate. 
+	var gcTimerRestart = false; // did the user type while timer active 
+	var gcTimerGoing = false; // the timer is currently active 
+	var gcGroupsList = ${gcGroupsList};
 	
+	function gcCheckName()
+	{
+		if (gcTimerGoing)
+		{ // Mark the fact that the user typed something while timer active
+			gcTimerRestart = true;
+			return;
+		}
+		// no timer active, so activate one. 
+		gcTimerGoing = true;
+		setTimeout(
+			function() 
+			{
+				gcTimerGoing = false;
+				if (gcTimerRestart)
+				{ // The user typed something while we were counting down,
+					// so we need to start the timer again. 
+					gcTimerRestart = false;
+					gcCheckName();
+				}
+				else
+				{ // User stopped typing, check for duplicate 
+					if (gcGroupsList.indexOf($('name').getValue()) < 0)
+					{ // no match, so not a duplicate, reset warning 
+						$('gcNameWarning').update();
+					}
+					else
+					{ // found a match, is a duplicate, display warning 
+						$('gcNameWarning').update("WARNING: There is an existing group with the same name. If you continue, a new group will not be created, but selected users will be merged into the existing group instead.");
+					}
+				}
+			}, 
+			1000
+		);
+	}
+
 	// hide the group name input box if we're adding to an existing group with the blackboard consumer. 
 	// this is really bad software practice since the providers/consumers are each supposed to be separate, but
 	// it was requested. 

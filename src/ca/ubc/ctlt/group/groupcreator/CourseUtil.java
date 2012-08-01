@@ -3,9 +3,11 @@ package ca.ubc.ctlt.group.groupcreator;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.sql.Connection;
 
 import blackboard.data.course.CourseMembership;
+import blackboard.data.course.Group;
 import blackboard.data.gradebook.Lineitem;
 import blackboard.data.gradebook.Score;
 import blackboard.db.ConnectionNotAvailableException;
@@ -13,6 +15,7 @@ import blackboard.persist.Id;
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseMembershipDbLoader;
+import blackboard.persist.course.GroupDbLoader;
 import blackboard.persist.gradebook.LineitemDbLoader;
 import blackboard.persist.gradebook.ScoreDbLoader;
 import blackboard.platform.context.CourseContext;
@@ -454,6 +457,33 @@ public class CourseUtil
 				ret.add(membership);
 			}
 		}
+		return ret;
+	}
+	
+	/**
+	 * Returns a list of group names in JSON array format. 
+	 * E.g.: ["group1","group2","group3"]
+	 * 
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public String getGroupsJSON() throws PersistenceException {
+		Id courseId = ctx.getCourseId();
+		String ret = "[";
+		List<Group> courseGroups = null;
+		GroupDbLoader groupLoader =  GroupDbLoader.Default.getInstance();
+		courseGroups = groupLoader.loadByCourseId(courseId);
+		for (Group group : courseGroups)
+		{
+			if (!group.isGroupSet())
+			{
+				// escape double quotes since that's the one I'm using
+				String title = group.getTitle().replace("\"", "\\\"");
+				ret += "\"" + title + "\",";
+			}
+		}
+		ret = ret.substring(0, ret.length() - 1);
+		ret += "]";
 		return ret;
 	}
 }
