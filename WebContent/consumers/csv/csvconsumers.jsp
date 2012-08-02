@@ -12,8 +12,59 @@ pageContext.setAttribute("bbContext", ctx);
 %>
 </bbNG:jspBlock>
 
+<style type="text/css">
+#csvExportTabs
+{
+	margin-bottom: 0.5em;
+}
+#csvExportTabs li
+{
+	padding-top: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+	display: inline;
+}
+#csvExportTabs li input
+{
+	margin: 1px;
+	margin-bottom: 0.5em;
+}
+#csvExportWindow
+{
+	padding: 1em;
+}
+.csvExportBold
+{
+	font-weight: bold;
+}
+.csvExportLight
+{
+	background: #e2e2e2;
+}
+.csvExportDark
+{
+	background: #cacaca;
+}
+#csvExportName
+{
+	width: 20em;
+}
+</style>
 <div class="ie8hacks">
-<ul>
+<ul id="csvExportTabs">
+	<li id="csvExportDlLi">
+		<input type="radio" name="csvExportOperation" value="download" id="csvExportDl" 
+			checked="checked" onchange="csvExportToggleOperation(); return false;" /> 
+		<label id="csvExportDlLabel" for="csvExportDl">Download to Your Computer</label>
+	</li>
+	<li id="csvExportCsLi">
+		<input type="radio" name="csvExportOperation" value="cs" id="csvExportCs" 
+			onchange="csvExportToggleOperation(); return false;" /> 
+		<label id="csvExportCsLabel" for="csvExportCs">Save to Content Collection</label>
+	</li>
+</ul>
+
+<ul id="csvExportWindow">
 	<li>
 		<div class="label">
 			<label for="name">
@@ -23,18 +74,6 @@ pageContext.setAttribute("bbContext", ctx);
 		<bbNG:textElement name="csvExportName" isRequired="true" value="${bbContext.course.displayTitle}.csv" />
 	</li> 
 	
-	<li>
-		<div class="label">
-			<label for="name">
-			Save Mode
-			</label>
-		</div>
-		<bbNG:selectElement name="csvExportOperation" isRequired="true" onchange="csvExportToggleOperation(); return false;">
-			<bbNG:selectOptionElement value="download" optionLabel="Download" />
-			<bbNG:selectOptionElement value="cs" optionLabel="Save as Content System File" />
-		</bbNG:selectElement>
-	</li>
-
 	<li id="csvExportCSOption">
 		<div class="label">
 			<label for="csvExportCSFolder">
@@ -56,15 +95,27 @@ csvExportToggleOperation();
 
 function csvExportToggleOperation()
 {
-	var select = $('csvExportOperation');
-	if (select[select.selectedIndex].value == "cs")
+	var select = $('csvExportCs');
+	if (select.checked)
 	{
+		markSelectedOperation("csvExportCs", "csvExportDl");
 		$('csvExportCSOption').show();
 	}
 	else
 	{
+		markSelectedOperation("csvExportDl", "csvExportCs");
 		$('csvExportCSOption').hide();
 	}
+}
+
+function markSelectedOperation(selected, other)
+{
+	$(selected + "Label").addClassName('csvExportBold');
+	$(selected + "Li").addClassName('csvExportDark');
+	$(selected + "Li").removeClassName('csvExportLight');
+	$(other + "Label").removeClassName('csvExportBold');
+	$(other + "Li").removeClassName('csvExportDark');
+	$(other + "Li").addClassName('csvExportLight');
 }
 </script>
 </bbNG:jsBlock>
