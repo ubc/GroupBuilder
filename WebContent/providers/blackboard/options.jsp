@@ -7,24 +7,42 @@
 <bbNG:includedPage>
 
 	<style type="text/css">
-	#groupslist ul, #groupslist ol
+	#groupslist h3
 	{
-		margin-left: 2em;
-		list-style-position: inside;
+		background: #bef;
+		padding: 0.5em;
+		margin: 0em;
 	}
 	
-	#groupslist li
+	#groupslist ol
+	{
+		padding: 0.5em;
+		margin: 0em;
+		margin-bottom: 1em;
+		list-style-position: inside;
+		background: #eff;
+	}
+	
+	#groupslist ol li
 	{
 		list-style-type: square;
+		padding: 0.5em;
+		margin: 0em;
 	}	
 	
-	#groupslist li li
+	.bbProviderHideCss
 	{
-		list-style-type: disc;
+		display: none;
+	}
+	
+	#groupslist p
+	{
+		margin-bottom: 1em;
 	}
 	</style>
 
 	<div id="groupslist" class="ie8hacks">
+	<p>List of groups, click to show group members list. Group members are listed in the format "Name (Student Number)".</p>
 	<bbNG:jspBlock>
 	<%
 	HashMap<String, GroupSet> sets = null;
@@ -46,26 +64,37 @@
 	}
 	else
 	{
+		int i = 0;
 		for (Map.Entry<String, GroupSet> setEntry : sets.entrySet())
 		{
-			out.println("<ul>");
 			for (Map.Entry<String, Group> groupEntry : setEntry.getValue().getGroups().entrySet())
 			{
-				out.println("<li>");
-				out.println("<h4>" + groupEntry.getKey() + "</h4>");
-				out.println("<ol>");
+				String olId = "BbProviderGroup" + i;
+				out.println("<h3><a href='#' onclick='bbProviderToggleGroups("+ olId +"); return false;'>" + 
+					groupEntry.getKey() + "</a></h3>");
+				out.println("<ol id='"+ olId +"' class='bbProviderHideCss'>");
 				for (Map.Entry<String, GroUser> userEntry : groupEntry.getValue().getMemberList().entrySet())	
 				{
-					out.println("<li>" + userEntry.getValue().getStudentID() + "</li>");
+					out.println("<li>" + userEntry.getValue().getName() + " ("
+						+ userEntry.getValue().getStudentID() + ")</li>");
 				}
 				out.println("</ol>");
-				out.println("</li>");
+				i++;
 			}
-			out.println("</ul>");
 		}
 	}
 	%>
 	</bbNG:jspBlock>
 	</div>
+	
+	<bbNG:jsBlock>
+	<script type="text/javascript">
+	function bbProviderToggleGroups(olId)
+	{
+		$(olId).toggleClassName("bbProviderHideCss");
+	}
+	</script>
+	</bbNG:jsBlock>
+	
 </bbNG:includedPage>
 
