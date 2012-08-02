@@ -1,6 +1,8 @@
 bin/
 dist/
 build/
+build.test/
+reports/
 lib/servlet-api*
 lib/*.jar
 *.swp

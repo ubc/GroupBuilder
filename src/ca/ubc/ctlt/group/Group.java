@@ -3,6 +3,7 @@ package ca.ubc.ctlt.group;
 import java.util.HashMap;
 import java.util.List;
 
+import blackboard.data.user.User;
 import blackboard.persist.BbPersistenceManager;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.user.UserDbLoader;
@@ -25,9 +26,9 @@ public class Group {
 		BbPersistenceManager bbPm = PersistenceServiceFactory.getInstance()
 				.getDbPersistenceManager();
 		UserDbLoader userLoader = (UserDbLoader) bbPm.getLoader(UserDbLoader.TYPE);
-		List<blackboard.data.user.User> bbUserList = userLoader.loadByGroupId(bbGroup.getId());
+		List<User> bbUserList = userLoader.loadByGroupId(bbGroup.getId());
 		
-		for (blackboard.data.user.User u:bbUserList) {
+		for (User u:bbUserList) {
 			GroUser user = new GroUser(u);
 			addMember(user);
 		}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import blackboard.base.BaseComparator;
@@ -23,7 +24,6 @@ import blackboard.persist.course.GroupMembershipDbPersister;
 import blackboard.persist.user.UserDbLoader;
 import blackboard.platform.context.Context;
 import blackboard.platform.persistence.PersistenceServiceFactory;
-
 import ca.ubc.ctlt.group.Consumer;
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
@@ -62,10 +62,10 @@ public class BlackboardConsumer extends Consumer {
 	}
 
 	@Override
-	public void setGroupSets(HashMap<String, GroupSet> sets) throws Exception {
+	public void setGroupSets(Map<String, GroupSet> sets) throws Exception {
 		if (sets == null) {
 			error("Group is empty!");
-			throw new NullPointerException("Group is empty!");
+			throw new Exception("Group is empty!");
 		}
 		
 		Context ctx = new BlackboardUtil(request).getContext();

@@ -1,15 +1,15 @@
 package ca.ubc.ctlt.group.blackboard;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
 
 import javax.servlet.http.HttpServletRequest;
-
-import ca.ubc.ctlt.group.GroupSet;
 
 import blackboard.base.InitializationException;
 import blackboard.data.course.CourseMembership;
@@ -18,54 +18,83 @@ import blackboard.data.course.GroupMembership;
 import blackboard.data.user.User;
 import blackboard.db.ConnectionNotAvailableException;
 import blackboard.persist.Id;
+import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseMembershipDbLoader;
 import blackboard.persist.course.GroupDbLoader;
+import blackboard.persist.user.UserDbLoader;
 import blackboard.platform.BbServiceException;
 import blackboard.platform.BbServiceManager;
 import blackboard.platform.context.Context;
 import blackboard.platform.context.ContextManager;
 import blackboard.platform.db.JdbcServiceFactory;
+import blackboard.platform.log.LogService;
+import blackboard.platform.log.LogServiceFactory;
+import ca.ubc.ctlt.group.GroupSet;
 
 public class BlackboardUtil
 {
 	private Context ctx;
-	
-	public BlackboardUtil(Context ctx)
-	{
-		this.ctx = ctx;
-	}
+	private static final LogService LOG = LogServiceFactory.getInstance();
+	private Connection db;
 
-	public BlackboardUtil(HttpServletRequest request) throws BbServiceException, InitializationException 
-	{
+	private static Context extractContext(HttpServletRequest request) {
 		ContextManager ctxMgr = null;
+		Context context = null;
 		try {
 			// get services
-			System.out.println("Initializing context manager...");
+			LOG.logDebug("Initializing context manager...");
 			ctxMgr = (ContextManager) BbServiceManager
 					.lookupService(ContextManager.class);
-			ctx = ctxMgr.setContext(request);
-			System.out.println("Current context: " + ctx);
+			context = ctxMgr.setContext(request);
+			LOG.logDebug("Current context: " + context);
 		} catch (BbServiceException e) {
-			System.err.println("Lookup service failed! " + e.getMessage());
-			throw e;
+			LOG.logFatal("Lookup service failed! " + e.getMessage(), e);
 		} catch (InitializationException e) {
-			System.err.println("Failed to initialize the context manager! "
-					+ e.getFullMessageTrace());
-			throw e;
+			LOG.logFatal(
+					"Failed to initialize the context manager! "
+							+ e.getFullMessageTrace(), e);
 		} finally {
 			if (ctxMgr != null) {
 				ctxMgr.releaseContext();
 			}
 		}
+
+		return context;
 	}
-	
-	public Context getContext() 
-	{
+
+	public BlackboardUtil(Context ctx) {
+		this(ctx, null);
+	}
+
+	public BlackboardUtil(HttpServletRequest request) {
+		this(BlackboardUtil.extractContext(request));
+	}
+
+	public BlackboardUtil(HttpServletRequest request, Connection db) {
+		this(BlackboardUtil.extractContext(request), db);
+	}
+
+	public BlackboardUtil(Context ctx, Connection db) {
+		this.ctx = ctx;
+
+		if (null != db) {
+			this.db = db;
+		} else {
+			try {
+				db = JdbcServiceFactory.getInstance().getDefaultDatabase()
+						.getConnectionManager().getConnection();
+			} catch (ConnectionNotAvailableException e) {
+				LOG.logError("Could not get DB connection!", e);
+			}
+		}
+	}
+
+	public Context getContext() {
 		return ctx;
 	}
 	
-	public HashMap<String, GroupSet> getGroupSets() throws PersistenceException
+	public Map<String, GroupSet> getGroupSets() throws PersistenceException
 	{
 		HashMap<String, GroupSet> sets;
 		
@@ -74,11 +103,11 @@ public class BlackboardUtil
 		GroupSet defaultSet = new GroupSet(GroupSet.EMPTY_NAME);
 		
 		for(Group s: bbGroups) {
-			System.out.println("Processing bbGroup: " + s);
+			LOG.logDebug("Processing bbGroup: " + s);
 			ca.ubc.ctlt.group.Group g = new ca.ubc.ctlt.group.Group(s);
 			if (!s.isInGroupSet()) {
 				defaultSet.addGroup(g);
-				System.out.println("Added to default set");
+				LOG.logDebug("Added to default set");
 			} else {
 				boolean added = false;
 				for (Entry<String, GroupSet> entry : sets.entrySet()) {
@@ -86,7 +115,7 @@ public class BlackboardUtil
 					if (set.getId().equals(s.getSetId().toExternalString())) {
 						set.addGroup(g);
 						added = true;
-						System.out.println("Added to "+ set.getName() +" set");
+						LOG.logDebug("Added to "+ set.getName() +" set");
 					}
 				}
 				
@@ -99,7 +128,7 @@ public class BlackboardUtil
 		if (!defaultSet.getGroups().isEmpty()) {
 			sets.put(GroupSet.EMPTY_NAME, defaultSet);
 		}
-		System.out.println(sets);
+		LOG.logDebug(sets.toString());
 		return sets;
 	}
 	
@@ -142,8 +171,6 @@ public class BlackboardUtil
 		
 		// From each GroupMembership, we can get the CourseMembership
 		CourseMembershipDbLoader cmLoader = CourseMembershipDbLoader.Default.getInstance();
-		Connection db = JdbcServiceFactory.getInstance().getDefaultDatabase()
-				.getConnectionManager().getConnection();
 		ArrayList<CourseMembership> courseMembers = new ArrayList<CourseMembership>();
 		for (GroupMembership gmember : groupMembers) {
 			CourseMembership cmember = cmLoader.loadById(gmember.getCourseMembershipId(), db, true);
@@ -155,6 +182,51 @@ public class BlackboardUtil
 		for (CourseMembership member : courseMembers) {
 			ret.add(member.getUser());
 		}
+		
+		try {
+			db.close();
+		} catch (SQLException e) {
+			LOG.logDebug("Failed to close the database connection!", e);
+		}
 		return ret;
+	}
+	
+	public User findUserByUsername(String username) {
+		User user = null;
+		try {
+			user = UserDbLoader.Default.getInstance().loadByUserName(username, db, true);
+		} catch (KeyNotFoundException e) {
+			LOG.logError("User with username "+username+" cannot be found!", e);
+		} catch (PersistenceException e) {
+			LOG.logError("Reading database error!", e);
+		}
+		
+		return user;
+	}
+	
+	/**
+	 * Given a student id, load the user object by searching the class list for
+	 * a user with the matching student id.
+	 * 
+	 * @param studentId
+	 */
+	public User findUserByStudentId(String studentId) {
+		User user = null;
+
+		try {
+			ArrayList<User> users = UserDbLoader.Default.getInstance()
+					.loadByCourseId(ctx.getCourseId(), db, true);
+
+			for (User u : users) {
+				if (u.getStudentId().equals(studentId)) {
+					user = u;
+					break;
+				}
+			}
+		} catch (PersistenceException e) {
+			LOG.logError("Reading database error!", e);
+		}
+
+		return user;
 	}
 }

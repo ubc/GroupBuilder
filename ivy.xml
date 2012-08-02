@@ -5,5 +5,7 @@
         <dependency org="javax.servlet" name="servlet-api" rev="2.4"/>
         <dependency org="junit" name="junit" rev="4.10"/>
         <dependency org="org.mockito" name="mockito-all" rev="1.9.5-rc1"/>
+        <!--    <dependency org="pmd" name="pmd" rev="4.3"/>-->
+        <dependency org="com.puppycrawl.tools" name="checkstyle" rev="5.5"/>
     </dependencies>
 </ivy-module>

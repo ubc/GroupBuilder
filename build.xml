@@ -5,7 +5,9 @@
     <property file="build.properties" />
 
     <path id="classpath.base">
-        <fileset dir="lib/"/>
+        <fileset dir="lib/">
+            <include name="**/*.jar"/>
+        </fileset>
         <fileset dir="${bbsdk}">
             <include name="**/*.jar"/>
         </fileset>
@@ -77,7 +79,11 @@
         <junit printsummary="yes">
             <classpath refid="classpath.test"/>
             <formatter type="brief" usefile="false" />
-            <test name="ca.ubc.ctlt.group.ManagerTest"/>
+            <batchtest haltonfailure="no" fork="yes"> 
+                <fileset dir="${build.test}"> 
+                    <include name="**/*.class" /> 
+                </fileset> 
+            </batchtest> 
         </junit>
     </target>
 
@@ -92,6 +98,43 @@
                 </fileset> 
             </batchtest> 
         </junit>
+    </target>
+
+    <!--<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="classpath.base"/>
+    <target name="pmd">
+        <pmd>
+            <classpath refid="classpath.base"/>
+            <formatter type="xml" toFile="${reports.test}/pmd_report.html" toConsole="true"/>
+            <fileset dir="${src}">
+                <include name="**/*.java"/>
+            </fileset>
+            <ruleset>basic</ruleset>
+            <ruleset>braces</ruleset>
+            <ruleset>clone</ruleset>
+            <ruleset>finalizers</ruleset>
+            <ruleset>imports</ruleset>
+            <ruleset>logging-jakarta-commons</ruleset>
+            <ruleset>j2ee</ruleset>
+            <ruleset>migrating</ruleset>
+            <ruleset>optimizations</ruleset>
+            <ruleset>strictexception</ruleset>
+            <ruleset>strings</ruleset>
+            <ruleset>sunsecure</ruleset>
+            <ruleset>unusedcode</ruleset>
+        </pmd>
+    </target>-->
+
+    <taskdef resource="checkstyletask.properties" classpathref="classpath.base"/>
+
+    <target name="checkstyle" description="Generates a report of code convention violations.">
+
+        <checkstyle config="docs/checkstyle_checks.xml" failureProperty="checkstyle.failure" failOnViolation="false">
+            <formatter type="xml" tofile="${reports.test}/checkstyle_report.xml"/>
+            <fileset dir="${src}" includes="**/*.java"/>
+        </checkstyle>
+
+        <!--<style in="${reports.test}/checkstyle_report.xml" out="${reports.test}/checkstyle_report.html" style="docs/checkstyle.xsl"/>-->
+
     </target>
 
     <target name="run-ci" description="run all tasks for ci server" depends="test-ci"/>

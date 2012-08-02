@@ -1,20 +1,24 @@
 package ca.ubc.ctlt.group;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import blackboard.platform.log.LogService;
+import blackboard.platform.log.LogServiceFactory;
+
 public abstract class ManagedObject {
 	protected HttpServletRequest request = null;
 	protected HttpServletResponse response = null;
-	protected HashMap<String, GroupSet> sets;
+	protected Map<String, GroupSet> sets;
 	protected List<String> logs = new ArrayList<String>();
 	protected List<String> errors = new ArrayList<String>();
 	protected Manager manager = null;
-
+	private static final LogService LOG = LogServiceFactory.getInstance();
+	
 	public Manager getManager() {
 		return manager;
 	}
@@ -46,12 +50,12 @@ public abstract class ManagedObject {
 	public abstract String getOptionsPage();
 	
 	protected void log(String message) {
-		System.out.println(message);
+		LOG.logDebug(message);
 		logs.add(message);
 	}
 	
 	protected void error(String message) {
-		System.err.println(message);
+		LOG.logError(message);
 		errors.add(message);
 	}
 	

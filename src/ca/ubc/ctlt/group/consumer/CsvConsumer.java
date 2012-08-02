@@ -5,26 +5,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import blackboard.cms.filesystem.CSContext;
 import blackboard.cms.filesystem.CSFileSystemException;
-
-import au.com.bytecode.opencsv.CSVWriter;
-
 import ca.ubc.ctlt.group.Consumer;
+import ca.ubc.ctlt.group.GroUser;
 import ca.ubc.ctlt.group.Group;
 import ca.ubc.ctlt.group.GroupSet;
-import ca.ubc.ctlt.group.GroUser;
 
 public class CsvConsumer extends Consumer {
 	// reusable buffer for stripping control characters, provides a mild speedup
     private char[] oldChars = new char[10];
     
 	@Override
-	public void setGroupSets(HashMap<String, GroupSet> sets) throws Exception {
+	public void setGroupSets(Map<String, GroupSet> sets) throws Exception {
 		if (sets.isEmpty()) {
 			log("No group to save!");
 			return;

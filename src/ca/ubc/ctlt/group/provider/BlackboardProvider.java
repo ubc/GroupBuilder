@@ -1,20 +1,25 @@
 package ca.ubc.ctlt.group.provider;
 
-import java.util.HashMap;
+import java.util.Map;
+
+import blackboard.persist.PersistenceException;
 
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.Provider;
 import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
 
 public class BlackboardProvider extends Provider {
-	
-	@Override
-	public HashMap<String, GroupSet> getGroupSets() throws Exception {
 
-		HashMap<String, GroupSet> sets;
+	@Override
+	public Map<String, GroupSet> getGroupSets(BlackboardUtil util) {
+
+		Map<String, GroupSet> sets = null;
 		
-		BlackboardUtil util = new BlackboardUtil(request);
-		sets = util.getGroupSets();
+		try {
+			sets = util.getGroupSets();
+		} catch (PersistenceException e) {
+			log("Database error!");
+		}
 		
 		return sets;
 	}

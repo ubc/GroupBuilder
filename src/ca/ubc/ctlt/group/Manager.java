@@ -3,17 +3,27 @@ package ca.ubc.ctlt.group;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import blackboard.platform.log.LogService;
+import blackboard.platform.log.LogServiceFactory;
+import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
+
 public class Manager {
+	private static final String PARAM_PROVIDER = "provider";
+	private static final String PARAM_CONSUMER = "consumer";
 	private Provider provider = null;
 	private Consumer consumer = null;
 	private HttpServletRequest request = null;
 	private HttpServletResponse response = null;
-
+	private static final LogService LOG = LogServiceFactory.getInstance();
+	
 	public Manager() {
 	}
 	
@@ -21,22 +31,19 @@ public class Manager {
 		this.request = request;
 		this.response = response;
 		Class<?> p, c;
-		System.out.println("Using provider: " + getParam("provider"));
-		System.out.println("Using consumer: " + getParam("consumer"));
+		LOG.logDebug("Using provider: " + getParam(PARAM_PROVIDER));
+		LOG.logDebug("Using consumer: " + getParam(PARAM_CONSUMER));
 		try {
-			p = Class.forName(getParam("provider"));
+			p = Class.forName(getParam(PARAM_PROVIDER));
 			provider = (Provider) p.newInstance();
-			c = Class.forName(getParam("consumer"));
+			c = Class.forName(getParam(PARAM_CONSUMER));
 			consumer = (Consumer) c.newInstance();
 		} catch (ClassNotFoundException e) {
-			System.err.println("Class " + getParam("provider") + " or " + getParam("consumer") + " not found!");
-			e.printStackTrace();
+			LOG.logError("Class " + getParam(PARAM_PROVIDER) + " or " + getParam(PARAM_CONSUMER) + " not found!", e);
 		} catch (InstantiationException e) {
-			System.err.println("Initializing  " +  getParam("provider") + " or " + getParam("consumer") + " failed!");
-			e.printStackTrace();
+			LOG.logError("Initializing  " +  getParam(PARAM_PROVIDER) + " or " + getParam(PARAM_CONSUMER) + " failed!", e);
 		} catch (IllegalAccessException e) {
-			System.err.println("Illegal access to  " +  getParam("provider") + " or " + getParam("consumer") + "!");
-			e.printStackTrace();
+			LOG.logError("Illegal access to  " +  getParam(PARAM_PROVIDER) + " or " + getParam(PARAM_CONSUMER) + "!", e);
 		}		
 		
 		provider.setRequest(request);
@@ -71,7 +78,7 @@ public class Manager {
 		this.response = response;
 	}
 	
-	public String getParam(String name) {
+	public final String getParam(String name) {
 		return request.getParameter(name);
 	}
 	
@@ -89,16 +96,13 @@ public class Manager {
 	
 	public void process() {
 		try {
-			HashMap<String, GroupSet> sets = provider.getGroupSets();
+			Map<String, GroupSet> sets = provider.getGroupSets(new BlackboardUtil(request));
 			if (sets != null) {
-				System.out.println("Got group sets from provider:" + sets);
+				LOG.logDebug("Got group sets from provider:" + sets);
 				consumer.setGroupSets(sets);
-
-				return;
 			}
 		} catch (Exception e) {
-			System.err.println("Setting group failed: " + e.getMessage());
-			e.printStackTrace();
+			LOG.logError("Setting group failed: " + e.getMessage(), e);
 		}
 	}
 	
@@ -108,11 +112,9 @@ public class Manager {
 		try {
 			classes = getClasses("ca.ubc.ctlt.group.provider");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.logError("Class not found!", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.logError("Failed to read provider list!", e);
 		}
 		
 		return classes;
@@ -124,11 +126,9 @@ public class Manager {
 		try {
 			classes = getClasses("ca.ubc.ctlt.group.consumer");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.logError("Class not found!", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.logError("Failed to read consumer list!", e);
 		}
 		
 		return classes;
@@ -176,22 +176,22 @@ public class Manager {
 	private static List<Class> findClasses(File directory, String packageName)
 			throws ClassNotFoundException {
 		List<Class> classes = new ArrayList<Class>();
-		if (!directory.exists()) {
-			return classes;
-		}
-		File[] files = directory.listFiles();
-		for (File file : files) {
-			if (file.isDirectory()) {
-				assert !file.getName().contains(".");
-				classes.addAll(findClasses(file,
-						packageName + "." + file.getName()));
-			} else if (file.getName().endsWith(".class")) {
-				classes.add(Class.forName(packageName
-						+ '.'
-						+ file.getName().substring(0,
-								file.getName().length() - 6)));
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (File file : files) {
+				if (file.isDirectory()) {
+					assert !file.getName().contains(".");
+					classes.addAll(findClasses(file,
+							packageName + "." + file.getName()));
+				} else if (file.getName().endsWith(".class") && !file.getName().endsWith("Test.class")) {
+					classes.add(Class.forName(packageName
+							+ '.'
+							+ file.getName().substring(0,
+									file.getName().length() - 6)));
+				}
 			}
 		}
+		
 		return classes;
 	}
 

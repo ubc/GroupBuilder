@@ -1,21 +1,23 @@
 package ca.ubc.ctlt.group.provider;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import blackboard.base.InitializationException;
 import blackboard.db.ConnectionNotAvailableException;
 import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
-
+import blackboard.platform.BbServiceException;
+import ca.ubc.ctlt.group.GroUser;
 import ca.ubc.ctlt.group.Group;
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.Provider;
-import ca.ubc.ctlt.group.GroUser;
+import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
 
 public class GroupCreatorProvider extends Provider
 {
-
 	@Override
-	public HashMap<String, GroupSet> getGroupSets() throws KeyNotFoundException, ConnectionNotAvailableException, PersistenceException
+	public Map<String, GroupSet> getGroupSets(BlackboardUtil util)
 	{
 		HashMap<String, GroupSet> ret = new HashMap<String, GroupSet>();
 		// use the default groupset since we don't support creating groupsets yet
@@ -38,7 +40,7 @@ public class GroupCreatorProvider extends Provider
 		{
 			for (String user : users)
 			{
-				group.addMember(new GroUser(user));
+				group.addMember(new GroUser(new BlackboardUtil(request).findUserByUsername(user)));
 			}
 		}
 		

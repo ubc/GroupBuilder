@@ -1,6 +1,6 @@
 package ca.ubc.ctlt.group;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Consumer extends ManagedObject {
 	
@@ -10,5 +10,5 @@ public abstract class Consumer extends ManagedObject {
 	 * @param sets
 	 * @throws Exception
 	 */
-	public abstract void setGroupSets(HashMap<String, GroupSet> sets) throws Exception;
+	public abstract void setGroupSets(Map<String, GroupSet> sets) throws Exception;
 }
