@@ -82,7 +82,7 @@ public class BlackboardUtil
 			this.db = db;
 		} else {
 			try {
-				db = JdbcServiceFactory.getInstance().getDefaultDatabase()
+				this.db = JdbcServiceFactory.getInstance().getDefaultDatabase()
 						.getConnectionManager().getConnection();
 			} catch (ConnectionNotAvailableException e) {
 				LOG.logError("Could not get DB connection!", e);

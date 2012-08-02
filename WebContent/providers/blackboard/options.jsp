@@ -45,7 +45,7 @@
 	<p>List of groups, click to show group members list. Group members are listed in the format "Name (Student Number)".</p>
 	<bbNG:jspBlock>
 	<%
-	HashMap<String, GroupSet> sets = null;
+	Map<String, GroupSet> sets = null;
 	BlackboardUtil util = new BlackboardUtil(bbContext);
 	
 		
