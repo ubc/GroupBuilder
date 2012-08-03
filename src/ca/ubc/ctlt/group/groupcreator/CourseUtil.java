@@ -413,7 +413,10 @@ public class CourseUtil
 		
 		for (CourseMembership member : list)
 		{
-			ret.add(new UserWrapper(member));
+			if (member.getRole().equals(CourseMembership.Role.STUDENT))
+			{
+				ret.add(new UserWrapper(member));
+			}
 		}
 		
 		return ret;
