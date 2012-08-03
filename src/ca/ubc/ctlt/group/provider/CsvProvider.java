@@ -15,6 +15,7 @@ import blackboard.base.InitializationException;
 import blackboard.cms.filesystem.CSContext;
 import blackboard.cms.filesystem.CSEntry;
 import blackboard.cms.filesystem.CSFile;
+import blackboard.data.user.User;
 import blackboard.platform.BbServiceException;
 import ca.ubc.ctlt.group.GroUser;
 import ca.ubc.ctlt.group.Group;
@@ -24,6 +25,18 @@ import ca.ubc.ctlt.group.UploadMultipartRequestWrapper;
 import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
 
 public class CsvProvider extends Provider {
+	public final static int HEADER_GROUP = 0;
+	public final static int HEADER_USERNAME = 1;
+	public final static int HEADER_STUDENTID = 2;
+	public final static int HEADER_GROUPSET = 3;
+
+	// possible header names to match to the headers, headers are indexed by
+	// above order in this array. names do not have any specific order. All the
+	// names are lower case and without space.
+	private final static String[][] HEADERS = {
+			{ "group", "groupname", "groupid" },
+			{ "username", "userid", "id" }, { "studentid", "studentnumber" },
+			{ "groupset", "set", "setname", "setid" } };
 
 	@Override
 	public Map<String, GroupSet> getGroupSets(BlackboardUtil util) {
@@ -31,13 +44,13 @@ public class CsvProvider extends Provider {
 			log("Request object is empty!");
 			return null;
 		}
-		
+
 		Reader reader = processFile();
-		
-		if(parseCSV(util, reader)) {
+
+		if (parseCSV(util, reader)) {
 			return sets;
 		}
-		
+
 		return null;
 	}
 
@@ -98,10 +111,12 @@ public class CsvProvider extends Provider {
 
 		return reader;
 	}
-	
+
 	/**
-	 * Parse the CSV import. 
-	 * @param util TODO
+	 * Parse the CSV import.
+	 * 
+	 * @param util
+	 *            TODO
 	 * @param csvfile
 	 * 
 	 * @return
@@ -114,64 +129,148 @@ public class CsvProvider extends Provider {
 		try {
 			reader = new CSVReader(csvfile);
 			String[] nextLine;
-			//reader.readNext(); // ignore the first line since it's the header
+			int lineNum = 2;
+
+			// parse header and check the required columns
+			Map<Integer, Integer> headerIndexes = parseHeader(reader.readNext());
+			if (headerIndexes.get(HEADER_GROUP) == null
+					|| (headerIndexes.get(HEADER_USERNAME) == null && headerIndexes
+							.get(HEADER_STUDENTID) == null)) {
+				throw new IOException(
+						"Unable to parse header. Missing required column.");
+			}
+
 			while ((nextLine = reader.readNext()) != null) {
-				if (nextLine[0].trim().isEmpty()) {
-					// use GroupSet.EMPTY_NAME for group set name for the file without group set
-					nextLine[0] = GroupSet.EMPTY_NAME;
+				// check the required fields
+				if ((headerIndexes.get(HEADER_GROUP) == null || nextLine[headerIndexes.get(HEADER_GROUP)].trim().isEmpty()) ||
+						((headerIndexes.get(HEADER_USERNAME) == null || nextLine[headerIndexes.get(HEADER_USERNAME)].trim().isEmpty()) && 
+						(headerIndexes.get(HEADER_STUDENTID) == null || nextLine[headerIndexes.get(HEADER_STUDENTID)].trim().isEmpty()))) {
+					throw new IOException("Required field missing on line " + lineNum + "!");
 				}
-				
-				GroupSet set = sets.get(nextLine[0].trim());
+
+				if (headerIndexes.get(HEADER_GROUPSET) == null
+						|| nextLine[headerIndexes.get(HEADER_GROUPSET)].trim()
+								.isEmpty()) {
+					// use GroupSet.EMPTY_NAME for group set name for the file
+					// without group set
+					nextLine[headerIndexes.get(HEADER_GROUPSET)] = GroupSet.EMPTY_NAME;
+				}
+
+				GroupSet set = sets.get(nextLine[headerIndexes.get(HEADER_GROUPSET)].trim());
 				if (set == null) {
-					set = new GroupSet(nextLine[0].trim());
-					sets.put(nextLine[0], set);
+					set = new GroupSet(nextLine[headerIndexes.get(HEADER_GROUPSET)].trim());
+					sets.put(nextLine[headerIndexes.get(HEADER_GROUPSET)], set);
 				}
-				
-				Group group = set.getGroup(nextLine[1].trim());
+
+				Group group = set.getGroup(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
 				if (group == null) {
-					group = new Group(nextLine[1].trim());
+					group = new Group(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
 					set.addGroup(group);
 				}
+
+				GroUser user = null;
+				User bbUser = null;
 				
-				GroUser user = group.getMember(nextLine[2].trim());	
-				if (user == null) {
-					user = new GroUser(util.findUserByStudentId(nextLine[2].trim()));
-					log(user.getStudentID());
+				if (headerIndexes.get(HEADER_USERNAME) != null && !nextLine[headerIndexes.get(HEADER_USERNAME)].trim().isEmpty()) {
+					bbUser = util.findUserByUsername(nextLine[headerIndexes.get(HEADER_USERNAME)].trim());
+				} else {
+					bbUser = util.findUserByStudentId(nextLine[headerIndexes.get(HEADER_STUDENTID)].trim());
+				}
+
+				if (bbUser == null) {
+					throw new IOException("Could not find user in database!");
+				} else {
+					user = new GroUser(bbUser);
+				}
+				
+				if (!group.hasMember(user)) {
 					group.addMember(user);
 				}
+
+				lineNum++;
 			}
 		} catch (IOException e) {
-			log("Unable to read CSV file: " + e.getMessage());
+			error("Unable to parse CSV file: " + e.getMessage());
 			return false;
 		}
 		log("CSV parsing successful!");
 		return true;
 	}
 
+	private Map<Integer, Integer> parseHeader(String[] header) {
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>(4);
+
+		for (int i = 0; i < HEADERS.length; i++) {
+			for (int j = 0; j < header.length; j++) {
+				if (CsvProvider.isSimilarString(header[j], HEADERS[i], 1)) {
+					map.put(i, j);
+				}
+			}
+		}
+		
+		return map;
+	}
+
 	@Override
-	public String getOptionsPage()
-	{
+	public String getOptionsPage() {
 		return "providers/csv/options.jsp";
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return "CSV";
 	}
 
 	@Override
-	public String getDescription()
-	{
+	public String getDescription() {
 		return "Reads in group information from a CSV file.";
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see ca.ubc.ctlt.group.Provider#hasFileUpload()
 	 */
 	@Override
-	public boolean hasFileUpload()
-	{
+	public boolean hasFileUpload() {
 		return true;
+	}
+
+	private static int minimum(int a, int b, int c) {
+		return Math.min(Math.min(a, b), c);
+	}
+
+	public static int computeLevenshteinDistance(CharSequence str1,
+			CharSequence str2) {
+		int[][] distance = new int[str1.length() + 1][str2.length() + 1];
+
+		for (int i = 0; i <= str1.length(); i++)
+			distance[i][0] = i;
+		for (int j = 0; j <= str2.length(); j++)
+			distance[0][j] = j;
+
+		for (int i = 1; i <= str1.length(); i++)
+			for (int j = 1; j <= str2.length(); j++)
+				distance[i][j] = minimum(
+						distance[i - 1][j] + 1,
+						distance[i][j - 1] + 1,
+						distance[i - 1][j - 1]
+								+ ((str1.charAt(i - 1) == str2.charAt(j - 1)) ? 0
+										: 1));
+
+		return distance[str1.length()][str2.length()];
+	}
+
+	public static boolean isSimilarString(String target, String[] candidates,
+			int tolerance) {
+		boolean ret = false;
+		target = target.trim().toLowerCase().replaceAll("\\s","");
+		for (String str : candidates) {
+			if (computeLevenshteinDistance(target, str) <= tolerance) {
+				ret = true;
+				break;
+			}
+		}
+		return ret;
 	}
 }

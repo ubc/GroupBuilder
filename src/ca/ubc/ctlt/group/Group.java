@@ -66,4 +66,8 @@ public class Group {
 	public void addMember(GroUser user) {
 		memberList.put(user.getUserName(), user);
 	}
+	
+	public boolean hasMember(GroUser user) {
+		return getMember(user.getUserName()) != null;
+	}
 }

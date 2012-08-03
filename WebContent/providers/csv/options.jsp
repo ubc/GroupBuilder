@@ -25,18 +25,25 @@
 
 <div class="ie8hacks">
 <p id="startCSVExp">
-The input file must be a comma delimited CSV file. Each value can be surrounded by quote marks. The first line is 
-the header and is ignored during processing. There are 3 columns, the first column indicates the GroupSet name,
-the second column is the Group name, and the third column is the student's ID.
-</p>
-<p>
-E.g.:
-</p>
+	The input file must be a comma delimited CSV file. Each value can be
+	surrounded by quote marks. The first line is the header and is parsed
+	during processing. There are 4 columns, the first column is the Group
+	name, the second column is Username, the third is the student's ID
+	and the last column indicates the GroupSet name.</p>
+
+<ol>
+	<li>The Username and Student ID columns do not need to be exist
+		at the same time. But at least one of them has to be in the file to
+		identify the students.</li>
+	<li>The GroupSet column is optional.</li>
+</ol>
+		
+<p>E.g.:</p>
 <pre id="sampleCSV">
-"GroupSet","Group","Student ID"
-"Set1","Group1","10000000"
-"Set1","Group1","10000001"
-"Set1","Group2","10000002"
+"Group","Username","Student ID","GroupSet"
+"Group1","Username0","10000000","Set1"
+"Group1","Username1","10000001","Set1"
+"Group2","Username2","10000002","Set1"
 </pre>
 </div>
 
