@@ -7,7 +7,7 @@
 <%@ taglib prefix="bbNG" uri="/bbNG"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<bbNG:learningSystemPage ctxId="ctx">
+<bbNG:learningSystemPage ctxId="ctx" entitlement="course.enrollment.MODIFY">
 	
 	<bbNG:pageHeader instructions="Please Select Operation">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
