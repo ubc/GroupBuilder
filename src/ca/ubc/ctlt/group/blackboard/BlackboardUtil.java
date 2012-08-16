@@ -104,7 +104,7 @@ public class BlackboardUtil
 		
 		for(Group s: bbGroups) {
 			LOG.logDebug("Processing bbGroup: " + s);
-			ca.ubc.ctlt.group.Group g = new ca.ubc.ctlt.group.Group(s);
+			ca.ubc.ctlt.group.GroGroup g = new ca.ubc.ctlt.group.GroGroup(s);
 			if (!s.isInGroupSet()) {
 				defaultSet.addGroup(g);
 				LOG.logDebug("Added to default set");
@@ -130,6 +130,26 @@ public class BlackboardUtil
 		}
 		LOG.logDebug(sets.toString());
 		return sets;
+	}
+	
+	/**
+	 * Filter out Group objects that actually represent groupsets and return the list of groups
+	 * that are actualy groups.
+	 * @return
+	 * @throws PersistenceException
+	 */
+	public List<Group> getGroups() throws PersistenceException {
+		List<Group> ret = new ArrayList<Group>();
+		
+		List<Group> bbGroups = getAllBbGroups(ctx.getCourseId());
+		
+		for(Group group : bbGroups) {
+			if (!group.isGroupSet()) {
+				ret.add(group);
+			}
+		}
+		
+		return ret;
 	}
 	
 	protected HashMap<String, GroupSet> getSets (Id courseId) {

@@ -6,10 +6,10 @@ public class GroupSet {
 	public static final String EMPTY_NAME = "##DEFAULT##";
 	private String name;
 	private String id;
-	private HashMap<String, Group> groups;
+	private HashMap<String, GroGroup> groups;
 	
 	public GroupSet(String name) {
-		groups = new HashMap<String, Group>();
+		groups = new HashMap<String, GroGroup>();
 		this.name = name;
 	}
 	
@@ -37,19 +37,19 @@ public class GroupSet {
 		this.id = id;
 	}
 	
-	public HashMap<String, Group> getGroups() {
+	public HashMap<String, GroGroup> getGroups() {
 		return groups;
 	}
 	
-	public void setGroups(HashMap<String, Group> groups) {
+	public void setGroups(HashMap<String, GroGroup> groups) {
 		this.groups = groups;
 	}
 	
-	public Group getGroup(String name) {
+	public GroGroup getGroup(String name) {
 		return groups.get(name);
 	}
 	
-	public void addGroup(Group group) {
+	public void addGroup(GroGroup group) {
 		groups.put(group.getName(), group);
 	}
 }

@@ -9,7 +9,7 @@ import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.platform.BbServiceException;
 import ca.ubc.ctlt.group.GroUser;
-import ca.ubc.ctlt.group.Group;
+import ca.ubc.ctlt.group.GroGroup;
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.Provider;
 import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
@@ -28,7 +28,7 @@ public class GroupCreatorProvider extends Provider
 		String[] users = request.getParameterValues("usersSelected");
 		
 		// create the group
-		Group group = new Group(groupName);
+		GroGroup group = new GroGroup(groupName);
 		
 		// populate the group
 		if (users == null)

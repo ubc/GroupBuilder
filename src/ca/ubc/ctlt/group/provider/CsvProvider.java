@@ -18,7 +18,7 @@ import blackboard.cms.filesystem.CSFile;
 import blackboard.data.user.User;
 import blackboard.platform.BbServiceException;
 import ca.ubc.ctlt.group.GroUser;
-import ca.ubc.ctlt.group.Group;
+import ca.ubc.ctlt.group.GroGroup;
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.Provider;
 import ca.ubc.ctlt.group.UploadMultipartRequestWrapper;
@@ -162,9 +162,9 @@ public class CsvProvider extends Provider {
 					sets.put(nextLine[headerIndexes.get(HEADER_GROUPSET)], set);
 				}
 
-				Group group = set.getGroup(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
+				GroGroup group = set.getGroup(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
 				if (group == null) {
-					group = new Group(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
+					group = new GroGroup(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
 					set.addGroup(group);
 				}
 

@@ -9,17 +9,17 @@ import blackboard.persist.PersistenceException;
 import blackboard.persist.user.UserDbLoader;
 import blackboard.platform.persistence.PersistenceServiceFactory;
 
-public class Group {
+public class GroGroup {
 	private String name;
 	private String id;
 	private HashMap<String, GroUser> memberList;
 	
-	public Group(String name) {
+	public GroGroup(String name) {
 		memberList = new HashMap<String, GroUser>();
 		this.name = name;
 	}
 	
-	public Group(blackboard.data.course.Group bbGroup) throws PersistenceException {
+	public GroGroup(blackboard.data.course.Group bbGroup) throws PersistenceException {
 		memberList = new HashMap<String, GroUser>();
 		this.name = bbGroup.getTitle();
 		this.id = bbGroup.getId().toExternalString();

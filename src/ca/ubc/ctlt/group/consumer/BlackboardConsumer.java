@@ -112,9 +112,9 @@ public class BlackboardConsumer extends Consumer {
 				}
 			}
 
-			for (Entry<String, ca.ubc.ctlt.group.Group> entry1 : set
+			for (Entry<String, ca.ubc.ctlt.group.GroGroup> entry1 : set
 					.getGroups().entrySet()) {
-				ca.ubc.ctlt.group.Group group = entry1.getValue();
+				ca.ubc.ctlt.group.GroGroup group = entry1.getValue();
 
 				// The 'add' operation means the user wants to add users to an existing group.
 				// We ignore the group name supplied by the provider and replace it with
@@ -157,7 +157,7 @@ public class BlackboardConsumer extends Consumer {
 		goodbye(ctx.getCourseId());
 	}
 	
-	private Group createGroup(ca.ubc.ctlt.group.Group group, Group groupSet) throws PersistenceException, ValidationException {
+	private Group createGroup(ca.ubc.ctlt.group.GroGroup group, Group groupSet) throws PersistenceException, ValidationException {
 		GroupDbPersister groupDbPersister;
 		
 		groupDbPersister = (GroupDbPersister) bbPm.getPersister(GroupDbPersister.TYPE);

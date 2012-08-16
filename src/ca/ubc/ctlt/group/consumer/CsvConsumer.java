@@ -14,7 +14,7 @@ import blackboard.cms.filesystem.CSContext;
 import blackboard.cms.filesystem.CSFileSystemException;
 import ca.ubc.ctlt.group.Consumer;
 import ca.ubc.ctlt.group.GroUser;
-import ca.ubc.ctlt.group.Group;
+import ca.ubc.ctlt.group.GroGroup;
 import ca.ubc.ctlt.group.GroupSet;
 
 public class CsvConsumer extends Consumer {
@@ -38,8 +38,8 @@ public class CsvConsumer extends Consumer {
 			String setName = set.getName().equals(GroupSet.EMPTY_NAME) ? ""
 					: set.getName();
 
-			for (Entry<String, Group> entryGroup : set.getGroups().entrySet()) {
-				Group group = entryGroup.getValue();
+			for (Entry<String, GroGroup> entryGroup : set.getGroups().entrySet()) {
+				GroGroup group = entryGroup.getValue();
 
 				for (Entry<String, GroUser> entryMember : group.getMemberList()
 						.entrySet()) {
