@@ -4,6 +4,7 @@
 	
 <%@ taglib prefix="bbNG" uri="/bbNG"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <bbNG:includedPage>
 
@@ -65,7 +66,7 @@
 	<bbNG:inventoryList collection="${usersList}" objectVar="user"
 		className="UserWrapper" description="List of users in this course."
 		initialSortCol="familyName" renderAjax="true" showAll="true">
-		<bbNG:listCheckboxElement name="usersSelected" value="${user.userName}" />
+		<bbNG:listCheckboxElement name="usersSelected" value="${fn:escapeXml(user.userName)}" />
 		<bbNG:listElement label="Student ID" name="studentId" isRowHeader="true" comparator="${user.cmStudentId}">
              ${user.studentId}
         </bbNG:listElement>

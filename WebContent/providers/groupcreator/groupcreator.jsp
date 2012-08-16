@@ -159,8 +159,6 @@
 	}
 
 	// hide the group name input box if we're adding to an existing group with the blackboard consumer. 
-	// this is really bad software practice since the providers/consumers are each supposed to be separate, but
-	// it was requested. 
 	if ($('blackboardConsumerOperation') != undefined)
 	{
 		gcHideNameIfMerge();
@@ -172,10 +170,18 @@
 		if ($('blackboardConsumerOperation').getValue() == 'add')
 		{
 			$('gcGroupName').hide();
+			if ($F('name') == "")
+			{
+				$('name').value = "EMPTY!!!--";
+			}
 		}
 		else
 		{
 			$('gcGroupName').show();
+			if ($F('name') == "EMPTY!!!--")
+			{
+				$('name').value = "";
+			}
 		}
 	}
 	
