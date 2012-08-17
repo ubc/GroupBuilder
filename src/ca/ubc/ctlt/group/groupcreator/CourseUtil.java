@@ -485,7 +485,9 @@ public class CourseUtil
 				ret += "\"" + title + "\",";
 			}
 		}
-		ret = ret.substring(0, ret.length() - 1);
+		if (ret.length() > 1) {
+			ret = ret.substring(0, ret.length() - 1);
+		}
 		ret += "]";
 		return ret;
 	}
