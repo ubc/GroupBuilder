@@ -32,14 +32,12 @@ pageContext.setAttribute("groups", wrappers);
 	</li>
 
 	<li id="bbConsumerExistingGroups" style="display:none;">
+	<h3>Select Group</h3>
 	<bbNG:selectElement name="blackboardConsumerGroupSelection" isRequired="true" onchange="bbConsumerShowUsersList(); return false;">
 		<c:forEach var="group" items="${groups}">
 			<bbNG:selectOptionElement value="${group.idStr}" optionLabel="${group.title}" />
 		</c:forEach>
 	</bbNG:selectElement>
-	<p>
-	Note: The group name you selected here will overwrite the group name given above.
-	</p>
 	</li>
 	<li id="bbConsumerGroup">
 		<span id="bbConsumerViewStatus"></span>

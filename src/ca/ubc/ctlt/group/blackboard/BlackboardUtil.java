@@ -182,6 +182,9 @@ public class BlackboardUtil
 	public List<User> getUsers(String groupId) throws PersistenceException, ConnectionNotAvailableException {
 		// To get a list of users in a group, we have to traverse a hierarchy of data relations.
 		// The hierarchy goes Group -> GroupMembership -> CourseMembership -> User
+		if (groupId.isEmpty()) {
+			return new ArrayList<User>();
+		}
 		
 		// First, we get the Group
 		GroupDbLoader gLoader = GroupDbLoader.Default.getInstance();
