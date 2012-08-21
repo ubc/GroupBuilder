@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import blackboard.data.user.User;
 import ca.ubc.ctlt.group.GroUser;
-import ca.ubc.ctlt.group.Group;
+import ca.ubc.ctlt.group.GroGroup;
 import ca.ubc.ctlt.group.GroupSet;
 import ca.ubc.ctlt.group.UploadMultipartRequestWrapper;
 import ca.ubc.ctlt.group.blackboard.BlackboardUtil;
@@ -163,7 +163,7 @@ public class CsvProviderTest {
 			assertNotNull(set);
 			assertTrue(2 == set.getGroups().size());
 
-			Group group = set.getGroup("Group1");
+			GroGroup group = set.getGroup("Group1");
 			assertNotNull(group);
 			assertTrue("Group1".equals(group.getName()));
 			assertTrue(3 == group.getMemberList().size());
