@@ -5,7 +5,7 @@
 <!-- Tag libraries -->
 <%@taglib prefix="bbNG" uri="/bbNG"%>
 
-<bbNG:learningSystemPage ctxId="ctx" entitlement="course.enrollment.MODIFY">
+<bbNG:learningSystemPage ctxId="ctx" entitlement="course.groups.CREATE">
 	
 	<bbNG:pageHeader instructions="Please Follow the Steps">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
