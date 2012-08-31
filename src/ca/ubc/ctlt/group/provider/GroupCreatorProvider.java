@@ -3,11 +3,6 @@ package ca.ubc.ctlt.group.provider;
 import java.util.HashMap;
 import java.util.Map;
 
-import blackboard.base.InitializationException;
-import blackboard.db.ConnectionNotAvailableException;
-import blackboard.persist.KeyNotFoundException;
-import blackboard.persist.PersistenceException;
-import blackboard.platform.BbServiceException;
 import ca.ubc.ctlt.group.GroUser;
 import ca.ubc.ctlt.group.GroGroup;
 import ca.ubc.ctlt.group.GroupSet;

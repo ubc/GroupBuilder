@@ -84,9 +84,9 @@ public class CsvProviderTest {
 	}
 
 	@Test
-	public final void testGetGroupSetsWithoutSetColumn() {
+	public final void testGetGroupSetsWithEmptyGroupSetColumn() {
 		when(request.getFileFromParameterName("csvfile_LocalFile0"))
-				.thenReturn(new File("test/fixtures/groups_noset.csv"));
+				.thenReturn(new File("test/fixtures/groups_emptygroupset.csv"));
 
 		CsvProvider provider = new CsvProvider();
 		provider.setRequest(request);
@@ -97,9 +97,48 @@ public class CsvProviderTest {
 	}
 
 	@Test
+	public final void testGetGroupSetsWithNoGroupSetColumn() {
+		when(request.getFileFromParameterName("csvfile_LocalFile0"))
+				.thenReturn(new File("test/fixtures/groups_nogroupset.csv"));
+
+		CsvProvider provider = new CsvProvider();
+		provider.setRequest(request);
+		provider.setResponse(response);
+
+		Map<String, GroupSet> sets = provider.getGroupSets(util);
+		verifySets(sets, new String[] {GroupSet.EMPTY_NAME});
+	}
+	
+	@Test
 	public final void testGetGroupSetsWithSetColumn() {
 		when(request.getFileFromParameterName("csvfile_LocalFile0"))
 		.thenReturn(new File("test/fixtures/groups_with_sets.csv"));
+
+		CsvProvider provider = new CsvProvider();
+		provider.setRequest(request);
+		provider.setResponse(response);
+
+		Map<String, GroupSet> sets = provider.getGroupSets(util);
+		verifySets(sets, new String[] { "Set1", "Set2" });
+	}
+	
+	@Test
+	public final void testGetGroupSetsWithMixUsernameStudentId() {
+		when(request.getFileFromParameterName("csvfile_LocalFile0"))
+		.thenReturn(new File("test/fixtures/groups_with_mix_username_studentid.csv"));
+
+		CsvProvider provider = new CsvProvider();
+		provider.setRequest(request);
+		provider.setResponse(response);
+
+		Map<String, GroupSet> sets = provider.getGroupSets(util);
+		verifySets(sets, new String[] { "Set1", "Set2" });
+	}
+	
+	@Test
+	public final void testGetGroupSetsWithNoUsernameColumn() {
+		when(request.getFileFromParameterName("csvfile_LocalFile0"))
+		.thenReturn(new File("test/fixtures/groups_with_sets_no_username.csv"));
 
 		CsvProvider provider = new CsvProvider();
 		provider.setRequest(request);
@@ -122,6 +161,19 @@ public class CsvProviderTest {
 		verifySets(sets, new String[] { "Set1", "Set2" });
 	}
 
+	@Test
+	public final void testGetGroupSetsWithUsernameNoStudentIdColumn() {
+		when(request.getFileFromParameterName("csvfile_LocalFile0"))
+		.thenReturn(new File("test/fixtures/groups_with_usernames_no_studentid.csv"));
+
+		CsvProvider provider = new CsvProvider();
+		provider.setRequest(request);
+		provider.setResponse(response);
+
+		Map<String, GroupSet> sets = provider.getGroupSets(util);
+		verifySets(sets, new String[] { "Set1", "Set2" });
+	}
+	
 	@Test
 	public final void testGetGroupSetsWithSetRandomRaw() {
 		when(request.getFileFromParameterName("csvfile_LocalFile0"))

@@ -133,52 +133,61 @@ public class CsvProvider extends Provider {
 
 			// parse header and check the required columns
 			Map<Integer, Integer> headerIndexes = parseHeader(reader.readNext());
-			if (headerIndexes.get(HEADER_GROUP) == null
-					|| (headerIndexes.get(HEADER_USERNAME) == null && headerIndexes
-							.get(HEADER_STUDENTID) == null)) {
-				throw new IOException(
-						"Unable to parse header. Missing required column.");
-			}
+			Integer groupIndex = headerIndexes.get(HEADER_GROUP);
+			Integer usernameIndex = headerIndexes.get(HEADER_USERNAME);
+			Integer studentIdIndex = headerIndexes.get(HEADER_STUDENTID);
+			Integer groupSetIndex = headerIndexes.get(HEADER_GROUPSET);
 
 			while ((nextLine = reader.readNext()) != null) {
-				// check the required fields
-				if ((headerIndexes.get(HEADER_GROUP) == null || nextLine[headerIndexes.get(HEADER_GROUP)].trim().isEmpty()) ||
-						((headerIndexes.get(HEADER_USERNAME) == null || nextLine[headerIndexes.get(HEADER_USERNAME)].trim().isEmpty()) && 
-						(headerIndexes.get(HEADER_STUDENTID) == null || nextLine[headerIndexes.get(HEADER_STUDENTID)].trim().isEmpty()))) {
-					throw new IOException("Required field missing on line " + lineNum + "!");
+				// Validate the data
+				if (nextLine[groupIndex].trim().isEmpty()) {
+					throw new IOException("Required field Group missing on line " + lineNum + "!");
 				}
-
-				if (headerIndexes.get(HEADER_GROUPSET) == null
-						|| nextLine[headerIndexes.get(HEADER_GROUPSET)].trim()
-								.isEmpty()) {
-					// use GroupSet.EMPTY_NAME for group set name for the file
-					// without group set
-					nextLine[headerIndexes.get(HEADER_GROUPSET)] = GroupSet.EMPTY_NAME;
+				
+				// Validation is made difficult by the fact that nextLine is a string array
+				// which will die silently if we try to index it with null.
+				// Need either username or student id, but can't index username or student id
+				// if they're null, taking advantage of lazy evaluation to prevent null indexing
+				if ((usernameIndex == null || nextLine[usernameIndex].trim().isEmpty()) && 
+					(studentIdIndex == null || nextLine[studentIdIndex].trim().isEmpty())
+				) {
+					throw new IOException("Must have at least a student id or username on line " + lineNum + "!");
 				}
-
-				GroupSet set = sets.get(nextLine[headerIndexes.get(HEADER_GROUPSET)].trim());
+				
+				// Get the GroupSet indicated by this line
+				GroupSet set;
+				String groupSetName;
+				if (groupSetIndex == null || nextLine[groupSetIndex].trim().isEmpty()) {
+					groupSetName = GroupSet.EMPTY_NAME;
+				}
+				else {
+					groupSetName = nextLine[groupSetIndex].trim();
+				}
+				set = sets.get(groupSetName);
 				if (set == null) {
-					set = new GroupSet(nextLine[headerIndexes.get(HEADER_GROUPSET)].trim());
-					sets.put(nextLine[headerIndexes.get(HEADER_GROUPSET)], set);
+					set = new GroupSet(groupSetName);
+					sets.put(groupSetName, set);
 				}
 
-				GroGroup group = set.getGroup(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
+				// Get the Group indicated by this line
+				GroGroup group = set.getGroup(nextLine[groupIndex].trim());
 				if (group == null) {
-					group = new GroGroup(nextLine[headerIndexes.get(HEADER_GROUP)].trim());
+					group = new GroGroup(nextLine[groupIndex].trim());
 					set.addGroup(group);
 				}
 
+				// Get the user
 				GroUser user = null;
 				User bbUser = null;
 				
-				if (headerIndexes.get(HEADER_USERNAME) != null && !nextLine[headerIndexes.get(HEADER_USERNAME)].trim().isEmpty()) {
-					bbUser = util.findUserByUsername(nextLine[headerIndexes.get(HEADER_USERNAME)].trim());
+				if (usernameIndex != null && !nextLine[usernameIndex].trim().isEmpty()) {
+					bbUser = util.findUserByUsername(nextLine[usernameIndex].trim());
 				} else {
-					bbUser = util.findUserByStudentId(nextLine[headerIndexes.get(HEADER_STUDENTID)].trim());
+					bbUser = util.findUserByStudentId(nextLine[studentIdIndex].trim());
 				}
 
 				if (bbUser == null) {
-					throw new IOException("Could not find user in database!");
+					throw new IOException("Could not find user in database on line "+ lineNum +"!");
 				} else {
 					user = new GroUser(bbUser);
 				}
@@ -197,7 +206,7 @@ public class CsvProvider extends Provider {
 		return true;
 	}
 
-	private Map<Integer, Integer> parseHeader(String[] header) {
+	private Map<Integer, Integer> parseHeader(String[] header) throws IOException {
 		Map<Integer, Integer> map = new HashMap<Integer, Integer>(4);
 
 		for (int i = 0; i < HEADERS.length; i++) {
@@ -206,6 +215,14 @@ public class CsvProvider extends Provider {
 					map.put(i, j);
 				}
 			}
+		}
+		
+		// Check that we have the required header fields
+		if (map.get(HEADER_GROUP) == null) {
+			throw new IOException("Required header 'Group' missing!");
+		}
+		if (map.get(HEADER_USERNAME) == null && map.get(HEADER_STUDENTID) == null) {
+			throw new IOException("There must be at least a Username or Student ID column.");
 		}
 		
 		return map;
