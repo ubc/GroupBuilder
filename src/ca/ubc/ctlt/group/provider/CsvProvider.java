@@ -10,6 +10,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import au.com.bytecode.opencsv.CSVReader;
 import blackboard.base.InitializationException;
 import blackboard.cms.filesystem.CSContext;
@@ -179,15 +181,19 @@ public class CsvProvider extends Provider {
 				// Get the user
 				GroUser user = null;
 				User bbUser = null;
+				String userId;
 				
 				if (usernameIndex != null && !nextLine[usernameIndex].trim().isEmpty()) {
 					bbUser = util.findUserByUsername(nextLine[usernameIndex].trim());
+					userId = nextLine[usernameIndex];
 				} else {
 					bbUser = util.findUserByStudentId(nextLine[studentIdIndex].trim());
+					userId = nextLine[studentIdIndex];
 				}
 
 				if (bbUser == null) {
-					throw new IOException("Could not find user in database on line "+ lineNum +"!");
+					error("Could not find user '"+ userId +"' in database on line "+ lineNum +":\t"+
+						StringUtils.join(nextLine, ", "));
 				} else {
 					user = new GroUser(bbUser);
 				}
@@ -222,7 +228,7 @@ public class CsvProvider extends Provider {
 			throw new IOException("Required header 'Group' missing!");
 		}
 		if (map.get(HEADER_USERNAME) == null && map.get(HEADER_STUDENTID) == null) {
-			throw new IOException("There must be at least a Username or Student ID column.");
+			throw new IOException("There must be at least a Username or Student ID header.");
 		}
 		
 		return map;
