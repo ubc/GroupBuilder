@@ -6,7 +6,7 @@
 <%@taglib prefix="bbNG" uri="/bbNG"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<bbNG:learningSystemPage ctxId="ctx" entitlement="course.groups.CREATE">
+<bbNG:learningSystemPage ctxId="ctx">
 	<bbNG:pageHeader instructions="Result">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
 		title="GroupBuilder"/>
