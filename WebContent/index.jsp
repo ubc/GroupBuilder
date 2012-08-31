@@ -68,7 +68,7 @@ select
 <li><a href='#' onclick="shortcut('import');">CSV Import</a> - Create groups from a CSV file.</li>
 <li><a href='#' onclick="shortcut('export');">CSV Export</a> - Export existing groups into a CSV file.</li>
 <li>
-	<a href="http://wiki.ubc.ca/Documentation:Connect/Use_the_GroupBuilder_Tool">
+	<a href="http://wiki.ubc.ca/Documentation:Connect/Use_the_GroupBuilder_Tool" target="_blank">
 	View tutorial style documentation on the UBC Wiki
 	</a>
 </li>
@@ -214,6 +214,6 @@ function shortcut(type)
 </script>
 </bbNG:jsBlock>
 
-<p id="tinyfootnote">Open source project, available on <a href="https://github.com/ubc/GroupBuilder" target="_blank">Github</a></p>
+<p id="tinyfootnote">Open source project, available on <a href="https://github.com/ubc/GroupBuilder" target="_blank">Github</a>.<br/> Special thanks to Bob Walker.</p>
 
 </bbNG:learningSystemPage>

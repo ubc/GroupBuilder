@@ -61,7 +61,7 @@ public class GroupCreatorProvider extends Provider
 	@Override
 	public String getDescription()
 	{
-		return "Specify group enrolment by filtering students based on grade center fields.";
+		return "Find users based on grade center fields.";
 	}
 
 	@Override

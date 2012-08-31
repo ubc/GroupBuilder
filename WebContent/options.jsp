@@ -43,11 +43,11 @@
 	<bbNG:form action="process.jsp" method="post" onSubmit="return validateForm();" enctype="${enctype}">
 		<bbNG:dataCollection>
 		
-			<bbNG:step title="Group Source - ${provider.name}">
+			<bbNG:step title="Group Source - ${provider.description}">
 				<jsp:include page="${provider.optionsPage}" flush="true" />
 			</bbNG:step>
 			
-			<bbNG:step title="Group Destination - ${consumer.name}">
+			<bbNG:step title="Group Destination - ${consumer.description}">
 				<jsp:include page="${consumer.optionsPage}" flush="true" />
 			</bbNG:step>
 			
