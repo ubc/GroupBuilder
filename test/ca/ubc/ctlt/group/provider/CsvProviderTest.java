@@ -82,7 +82,32 @@ public class CsvProviderTest {
 		assertTrue("providers/csv/options.jsp"
 				.equals(provider.getOptionsPage()));
 	}
+	
+	@Test
+	public final void testGetGroupSetsWith2Columns() {
+		// only group and username columns
+		when(request.getFileFromParameterName("csvfile_LocalFile0"))
+				.thenReturn(new File("test/fixtures/groups_2column_group_and_username_only.csv"));
 
+		CsvProvider provider = new CsvProvider();
+		provider.setRequest(request);
+		provider.setResponse(response);
+
+		Map<String, GroupSet> sets = provider.getGroupSets(util);
+		verifySets(sets, new String[] {GroupSet.EMPTY_NAME});
+		
+		// only group and student id columns
+		when(request.getFileFromParameterName("csvfile_LocalFile0"))
+				.thenReturn(new File("test/fixtures/groups_2column_group_and_studentid_only.csv"));
+
+		provider = new CsvProvider();
+		provider.setRequest(request);
+		provider.setResponse(response);
+
+		sets = provider.getGroupSets(util);
+		verifySets(sets, new String[] {GroupSet.EMPTY_NAME});
+	}
+	
 	@Test
 	public final void testGetGroupSetsWithEmptyGroupSetColumn() {
 		when(request.getFileFromParameterName("csvfile_LocalFile0"))
