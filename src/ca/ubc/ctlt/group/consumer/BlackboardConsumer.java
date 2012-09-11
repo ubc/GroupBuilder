@@ -34,9 +34,6 @@ public class BlackboardConsumer extends Consumer {
 	
 	private GroupDbLoader groupLoader;
 	private GroupDbPersister groupPersister;
-	private UserDbLoader userLoader;
-	private CourseMembershipDbLoader courseMembershipLoader;
-	private GroupMembershipDbLoader groupMembershipLoader;
 	private GroupMembershipDbPersister groupMembershipPersister;
 	
 	// Username String to User object
@@ -55,7 +52,8 @@ public class BlackboardConsumer extends Consumer {
 	 * @param courseId - the course that the groups just created live in.
 	 * @throws IOException - Redirect failed
 	 */
-	public void goodbye(Id courseId) throws IOException {
+	public void goodbye(Id courseId) throws IOException 
+	{
 		if (lastGroup == null || !errors.isEmpty())
 		{ // do nothing if an error happened
 			return;
@@ -85,9 +83,9 @@ public class BlackboardConsumer extends Consumer {
 	private void initLoaders(Context ctx) throws PersistenceException 
 	{
 		groupLoader = GroupDbLoader.Default.getInstance();
-		userLoader = UserDbLoader.Default.getInstance();
-		courseMembershipLoader = CourseMembershipDbLoader.Default.getInstance();
-		groupMembershipLoader = GroupMembershipDbLoader.Default.getInstance();
+		UserDbLoader userLoader = UserDbLoader.Default.getInstance();
+		CourseMembershipDbLoader courseMembershipLoader = CourseMembershipDbLoader.Default.getInstance();
+		GroupMembershipDbLoader groupMembershipLoader = GroupMembershipDbLoader.Default.getInstance();
 		groupPersister = GroupDbPersister.Default.getInstance();
 		groupMembershipPersister = GroupMembershipDbPersister.Default.getInstance();
 		
@@ -117,7 +115,7 @@ public class BlackboardConsumer extends Consumer {
 			groups.put(group.getTitle(), group);
 		}
 		
-		// Map user ids to a hash of the groups they belong to
+		// store group memberships for lookup using first coursemembership and then group id
 		List<GroupMembership> tmpGroupMemberships = groupMembershipLoader.loadByCourseId(ctx.getCourseId());
 		for (GroupMembership member : tmpGroupMemberships)
 		{
@@ -134,7 +132,6 @@ public class BlackboardConsumer extends Consumer {
 			}
 			tmpGMs.put(member.getGroupId(), member);
 		}
-		
 	}
 
 	@Override

@@ -49,17 +49,17 @@
 			}
 		}
 		
-		CourseUtil cc = new CourseUtil(bbContext);
+		SearchUtil sc = new SearchUtil(bbContext);
 		if (criterias.isEmpty())
 		{
 			// this is how you supply an appropriate Collection to inventoryList
-			pageContext.setAttribute("usersList", cc.getUsers());
+			pageContext.setAttribute("usersList", sc.getUsers());
 		}
 		else
 		{
-			pageContext.setAttribute("usersList", cc.search(criterias, combinationOp));
+			pageContext.setAttribute("usersList", sc.search(criterias, combinationOp));
 		}
-		//pageContext.setAttribute("debug", cc.getDebug()); // for debug
+		//pageContext.setAttribute("debug", sc.getDebug()); // for debug
 	%>
 	</bbNG:jspBlock>
 	

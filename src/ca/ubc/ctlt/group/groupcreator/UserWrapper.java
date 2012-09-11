@@ -19,7 +19,7 @@ public class UserWrapper
 	private User user;
 	private LinkedHashSet<SearchFieldInfo> searchFields = new LinkedHashSet<SearchFieldInfo>();
 	
-	// stupid boiler plate needed to sort inventoryList columns
+	// stupid boiler plate needed to sort bbNG:inventoryList columns
 	private static GenericFieldComparator<UserWrapper> cmUserName = 
 			new GenericFieldComparator<UserWrapper>("getUserName", UserWrapper.class);
 	private static GenericFieldComparator<UserWrapper> cmGivenName = 
@@ -34,10 +34,10 @@ public class UserWrapper
 	/**
 	 * @param member
 	 */
-	public UserWrapper(CourseMembership member)
+	public UserWrapper(CourseMembership member, User user)
 	{
 		this.member = member;
-		this.user = member.getUser();
+		this.user = user;
 	}
 	
 	/**
