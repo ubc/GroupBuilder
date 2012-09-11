@@ -1,14 +1,11 @@
 package ca.ubc.ctlt.group.consumer;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import blackboard.base.BaseComparator;
-import blackboard.base.GenericFieldComparator;
 import blackboard.data.ValidationException;
 import blackboard.data.course.CourseMembership;
 import blackboard.data.course.Group;
@@ -20,6 +17,7 @@ import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseMembershipDbLoader;
 import blackboard.persist.course.GroupDbLoader;
 import blackboard.persist.course.GroupDbPersister;
+import blackboard.persist.course.GroupMembershipDbLoader;
 import blackboard.persist.course.GroupMembershipDbPersister;
 import blackboard.persist.user.UserDbLoader;
 import blackboard.platform.context.Context;
@@ -34,6 +32,22 @@ public class BlackboardConsumer extends Consumer {
 	private int numGroups = 0;
 	private Group lastGroup = null;
 	
+	private GroupDbLoader groupLoader;
+	private GroupDbPersister groupPersister;
+	private UserDbLoader userLoader;
+	private CourseMembershipDbLoader courseMembershipLoader;
+	private GroupMembershipDbLoader groupMembershipLoader;
+	private GroupMembershipDbPersister groupMembershipPersister;
+	
+	// Username String to User object
+	private HashMap<String, User> users = new HashMap<String, User>();
+	// Username String to course membership
+	private HashMap<Id, CourseMembership> courseMemberships = new HashMap<Id, CourseMembership>();
+	// Group name to Group object
+	private HashMap<String, Group> groups = new HashMap<String, Group>();
+	// CourseMembership id to hash of Group Id to GroupMembership
+	private HashMap<Id, HashMap<Id, GroupMembership>> groupMemberships = new HashMap<Id, HashMap<Id, GroupMembership>>();
+	
 	/**
 	 * If only 1 group was created, redirect user to that group's view page. If multiple groups
 	 * were created, redirect user to the groups list page.
@@ -42,7 +56,7 @@ public class BlackboardConsumer extends Consumer {
 	 * @throws IOException - Redirect failed
 	 */
 	public void goodbye(Id courseId) throws IOException {
-		if (lastGroup == null)
+		if (lastGroup == null || !errors.isEmpty())
 		{ // do nothing if an error happened
 			return;
 		}
@@ -60,10 +74,72 @@ public class BlackboardConsumer extends Consumer {
 		numGroups = 0;
 		lastGroup = null;
 	}
+	
+	/**
+	 * Attempt to speed up import by doing all the required reading from
+	 * database up front. This avoids having a lot of small database queries
+	 * that are run for every single user in a group.
+	 * 
+	 * @throws PersistenceException 
+	 */
+	private void initLoaders(Context ctx) throws PersistenceException 
+	{
+		groupLoader = GroupDbLoader.Default.getInstance();
+		userLoader = UserDbLoader.Default.getInstance();
+		courseMembershipLoader = CourseMembershipDbLoader.Default.getInstance();
+		groupMembershipLoader = GroupMembershipDbLoader.Default.getInstance();
+		groupPersister = GroupDbPersister.Default.getInstance();
+		groupMembershipPersister = GroupMembershipDbPersister.Default.getInstance();
+		
+		// create user mappings for quick lookup later
+		HashMap<Id, User> idUsers = new HashMap<Id, User>(); 
+		List<User> tmpUsers = userLoader.loadByCourseId(ctx.getCourseId());
+		for (User user : tmpUsers) 
+		{
+			// Map username to User object
+			users.put(user.getUserName(), user);
+			// Map user id to User object
+			idUsers.put(user.getId(), user);
+		}
+		
+		// Map username to course membership
+		List<CourseMembership> tmpMemberships = courseMembershipLoader.loadByCourseId(ctx.getCourseId());
+		for (CourseMembership member : tmpMemberships)
+		{
+			User user = idUsers.get(member.getUserId());
+			courseMemberships.put(user.getId(), member);
+		}
+		
+		// Map group name to Group object
+		List<Group> tmpGroups = groupLoader.loadByCourseId(ctx.getCourseId());
+		for (Group group : tmpGroups)
+		{
+			groups.put(group.getTitle(), group);
+		}
+		
+		// Map user ids to a hash of the groups they belong to
+		List<GroupMembership> tmpGroupMemberships = groupMembershipLoader.loadByCourseId(ctx.getCourseId());
+		for (GroupMembership member : tmpGroupMemberships)
+		{
+			Id courseMemberId = member.getCourseMembershipId();
+			HashMap<Id, GroupMembership> tmpGMs;
+			if (groupMemberships.containsKey(courseMemberId))
+			{
+				tmpGMs = groupMemberships.get(courseMemberId);
+			}
+			else
+			{
+				tmpGMs = new HashMap<Id, GroupMembership>();
+				groupMemberships.put(courseMemberId, tmpGMs);
+			}
+			tmpGMs.put(member.getGroupId(), member);
+		}
+		
+	}
 
 	@Override
-	public void setGroupSets(Map<String, GroupSet> sets) throws Exception {
-		if (sets == null) {
+	public void setGroupSets(Map<String, GroupSet> importGroupSets) throws Exception {
+		if (importGroupSets == null) {
 			error("Group is empty!");
 			throw new Exception("Group is empty!");
 		}
@@ -71,24 +147,14 @@ public class BlackboardConsumer extends Consumer {
 		Context ctx = new BlackboardUtil(request).getContext();
 
 		log("Initializing loaders...");
-		GroupDbPersister groupDbPersister = null;
-		GenericFieldComparator<Group> groupTitleComparator = new GenericFieldComparator<Group>(
-				BaseComparator.ASCENDING, "getTitle", Group.class);
-
-		List<Group> courseGroups = null;
-		GroupDbLoader groupLoader = (GroupDbLoader) bbPm
-				.getLoader(GroupDbLoader.TYPE);
-		courseGroups = groupLoader.loadByCourseId(ctx.getCourseId());
-		groupDbPersister = (GroupDbPersister) bbPm
-				.getPersister(GroupDbPersister.TYPE);
-
-		Collections.sort(courseGroups, groupTitleComparator);
-
+		initLoaders(ctx);
+		
 		log("Loading group sets from course " + ctx.getCourseId());
 		List<Group> bbGroupSets = blackboard.persist.course.impl.GroupDAO.get()
 				.loadGroupSetsOnly(ctx.getCourseId());
 
-		for (Entry<String, GroupSet> entry : sets.entrySet()) {
+		// process the user entered groupsets
+		for (Entry<String, GroupSet> entry : importGroupSets.entrySet()) {
 			GroupSet set = entry.getValue();
 			Group bbGroupSet = new Group();
 			bbGroupSet.setId(null);
@@ -98,6 +164,7 @@ public class BlackboardConsumer extends Consumer {
 			
 			log("Processing group set: " + set.getName());
 
+			// check to see if we need to create a new groupset
 			if (!set.getName().equals(GroupSet.EMPTY_NAME)) {
 				// find if the group set exists
 				for (Group s : bbGroupSets) {
@@ -108,17 +175,18 @@ public class BlackboardConsumer extends Consumer {
 
 				// if not, create it
 				if (bbGroupSet.getId() == null) {
-					groupDbPersister.persist(bbGroupSet);
+					groupPersister.persist(bbGroupSet);
 				}
 			}
 
+			// check each group in this groupset
 			for (Entry<String, ca.ubc.ctlt.group.GroGroup> entry1 : set
 					.getGroups().entrySet()) {
 				ca.ubc.ctlt.group.GroGroup group = entry1.getValue();
 
 				// The 'add' operation means the user wants to add users to an existing group.
 				// We ignore the group name supplied by the provider and replace it with
-				// the name the user gave to the consumer instead.
+				// the name the user gave to the consumer instead. This is for GroupCreator.
 				String op = request.getParameter("blackboardConsumerOperation");
 				log("Group operation: " + op);
 				if (op.equals("add")) {
@@ -131,11 +199,8 @@ public class BlackboardConsumer extends Consumer {
 				log("Processing group: " + group.getName());
 				
 				// creating or getting group from database
-				Group bbGroup = new Group();
-				bbGroup.setTitle(group.getName());
-				int courseGroupIndex = Collections.binarySearch(courseGroups,
-						bbGroup, groupTitleComparator);
-				if (courseGroupIndex < 0) {
+				Group bbGroup = groups.get(group.getName());
+				if (bbGroup == null) {
 					// group doesn't exist, create it
 					try {
 						bbGroup = createGroup(group, bbGroupSet);
@@ -143,9 +208,9 @@ public class BlackboardConsumer extends Consumer {
 						error("Failed to create group: "+group.getName()+". ("+e.getMessage()+")");
 						continue;
 					}
-				} else {
-					bbGroup = (Group) courseGroups.get(courseGroupIndex);
 				}
+				
+				// tracking # of groups and last group used for completion message
 				numGroups++;
 				lastGroup = bbGroup;
 				
@@ -172,16 +237,7 @@ public class BlackboardConsumer extends Consumer {
 		return bbGroup;
 	}
 	
-	private void createMembership(Group bbGroup, HashMap<String, ca.ubc.ctlt.group.GroUser> memberList) throws PersistenceException {
-		GroupMembershipDbPersister groupMembershipDbPersister;
-		CourseMembershipDbLoader courseMembershipLoader;
-		UserDbLoader userLoader;
-		
-		userLoader = (UserDbLoader) bbPm.getLoader(UserDbLoader.TYPE);
-		groupMembershipDbPersister = (GroupMembershipDbPersister) bbPm
-				.getPersister(GroupMembershipDbPersister.TYPE);
-		courseMembershipLoader = (CourseMembershipDbLoader) bbPm
-				.getLoader(CourseMembershipDbLoader.TYPE);
+	private void createMembership(Group bbGroup, HashMap<String, ca.ubc.ctlt.group.GroUser> memberList) {
 		
 		// create membership
 		for (Entry<String, ca.ubc.ctlt.group.GroUser> entry : memberList.entrySet()) {
@@ -189,20 +245,31 @@ public class BlackboardConsumer extends Consumer {
 			User bbUser = null;
 			
 			try {
-				bbUser = userLoader.loadByUserName(user.getUserName());
-
-				CourseMembership courseMembership = courseMembershipLoader
-						.loadByCourseAndUserId(bbGroup.getCourseId(),
-								bbUser.getId());
-				GroupMembership groupMembership = new GroupMembership();
-				groupMembership.setCourseMembershipId(courseMembership.getId());
-				groupMembership.setGroupId(bbGroup.getId());
-
-				groupMembershipDbPersister.persist(groupMembership);
-			} catch (Exception e) {
-				error("Failed to save user " + bbUser.getId()
-						+ "in group " + bbGroup.getTitle() + "( "
+				bbUser = users.get(user.getUserName());
+				CourseMembership courseMembership = courseMemberships.get(bbUser.getId());
+				
+				log("Creating membership for group " + bbGroup.getTitle());
+				if (groupMemberships.containsKey(courseMembership.getId()) &&
+					groupMemberships.get(courseMembership.getId()).containsKey(bbGroup.getId()))
+				{ // user is already in the group, do nothing
+					log("User " + bbUser.getUserName() + " already in group " + bbGroup.getTitle());
+				}
+				else
+				{ // user isn't in the group, enrol
+					GroupMembership groupMembership = new GroupMembership();
+					groupMembership.setCourseMembershipId(courseMembership.getId());
+					groupMembership.setGroupId(bbGroup.getId());
+					groupMembershipPersister.persist(groupMembership);
+				}
+			} catch (PersistenceException e) {
+				error("Failed to save membership " + bbUser.getUserName()
+						+ " in group " + bbGroup.getTitle() + "( "
 						+ e.getMessage() + ")");
+			} catch (ValidationException e)
+			{
+				error("Inconsistent membership state. Failed to save user " 
+					+ bbUser.getUserName() + " in group "
+					+ bbGroup.getTitle() + "( " + e.getMessage() + ")");
 			}
 		}
 	}

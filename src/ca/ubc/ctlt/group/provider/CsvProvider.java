@@ -184,9 +184,11 @@ public class CsvProvider extends Provider {
 				String userId;
 				
 				if (usernameIndex != null && !nextLine[usernameIndex].trim().isEmpty()) {
+					log("Processing usernme: " + nextLine[usernameIndex]);
 					bbUser = util.findUserByUsername(nextLine[usernameIndex].trim());
 					userId = nextLine[usernameIndex];
 				} else {
+					log("Processing student ID: " + nextLine[studentIdIndex]);
 					bbUser = util.findUserByStudentId(nextLine[studentIdIndex].trim());
 					userId = nextLine[studentIdIndex];
 				}
