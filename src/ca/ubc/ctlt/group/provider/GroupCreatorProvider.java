@@ -35,7 +35,7 @@ public class GroupCreatorProvider extends Provider
 		{
 			for (String user : users)
 			{
-				group.addMember(new GroUser(new BlackboardUtil(request).findUserByUsername(user)));
+				group.addMember(new GroUser(util.findUserByUsername(user)));
 			}
 		}
 		

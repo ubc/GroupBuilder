@@ -141,7 +141,7 @@ public class BlackboardConsumer extends Consumer {
 			throw new Exception("Group is empty!");
 		}
 		
-		Context ctx = new BlackboardUtil(request).getContext();
+		Context ctx = BlackboardUtil.extractContext(request);
 
 		log("Initializing loaders...");
 		initLoaders(ctx);

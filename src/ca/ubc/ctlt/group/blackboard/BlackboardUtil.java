@@ -18,7 +18,6 @@ import blackboard.data.course.GroupMembership;
 import blackboard.data.user.User;
 import blackboard.db.ConnectionNotAvailableException;
 import blackboard.persist.Id;
-import blackboard.persist.KeyNotFoundException;
 import blackboard.persist.PersistenceException;
 import blackboard.persist.course.CourseMembershipDbLoader;
 import blackboard.persist.course.GroupDbLoader;
@@ -37,8 +36,11 @@ public class BlackboardUtil
 	private Context ctx;
 	private static final LogService LOG = LogServiceFactory.getInstance();
 	private Connection db;
+	
+	private HashMap<String, User> usersByUsername = new HashMap<String, User>();
+	private HashMap<String, User> usersByStudentId = new HashMap<String, User>();
 
-	private static Context extractContext(HttpServletRequest request) {
+	public static Context extractContext(HttpServletRequest request) {
 		ContextManager ctxMgr = null;
 		Context context = null;
 		try {
@@ -63,19 +65,19 @@ public class BlackboardUtil
 		return context;
 	}
 
-	public BlackboardUtil(Context ctx) {
+	public BlackboardUtil(Context ctx) throws PersistenceException {
 		this(ctx, null);
 	}
 
-	public BlackboardUtil(HttpServletRequest request) {
+	public BlackboardUtil(HttpServletRequest request) throws PersistenceException {
 		this(BlackboardUtil.extractContext(request));
 	}
 
-	public BlackboardUtil(HttpServletRequest request, Connection db) {
+	public BlackboardUtil(HttpServletRequest request, Connection db) throws PersistenceException {
 		this(BlackboardUtil.extractContext(request), db);
 	}
 
-	public BlackboardUtil(Context ctx, Connection db) {
+	public BlackboardUtil(Context ctx, Connection db) throws PersistenceException {
 		this.ctx = ctx;
 
 		if (null != db) {
@@ -87,6 +89,16 @@ public class BlackboardUtil
 			} catch (ConnectionNotAvailableException e) {
 				LOG.logError("Could not get DB connection!", e);
 			}
+		}
+		
+		// prefetch user data for quick lookup later
+		UserDbLoader userLoader = UserDbLoader.Default.getInstance();
+		List<User> tmpUsers = userLoader.loadByCourseId(ctx.getCourseId());
+		for (User user : tmpUsers) 
+		{
+			// Map username to User object
+			usersByUsername.put(user.getUserName(), user);
+			usersByStudentId.put(user.getStudentId(), user);
 		}
 	}
 
@@ -214,16 +226,13 @@ public class BlackboardUtil
 		return ret;
 	}
 	
-	public User findUserByUsername(String username) {
-		User user = null;
-		try {
-			user = UserDbLoader.Default.getInstance().loadByUserName(username, db, true);
-		} catch (KeyNotFoundException e) {
-			LOG.logError("User with username "+username+" cannot be found!", e);
-		} catch (PersistenceException e) {
-			LOG.logError("Reading database error!", e);
+	public User findUserByUsername(String username) 
+	{
+		User user = usersByUsername.get(username);
+		if (user == null)
+		{
+			LOG.logError("User with username "+username+" cannot be found!");
 		}
-		
 		return user;
 	}
 	
@@ -233,23 +242,13 @@ public class BlackboardUtil
 	 * 
 	 * @param studentId
 	 */
-	public User findUserByStudentId(String studentId) {
-		User user = null;
-
-		try {
-			ArrayList<User> users = UserDbLoader.Default.getInstance()
-					.loadByCourseId(ctx.getCourseId(), db, true);
-
-			for (User u : users) {
-				if (u.getStudentId().equals(studentId)) {
-					user = u;
-					break;
-				}
-			}
-		} catch (PersistenceException e) {
-			LOG.logError("Reading database error!", e);
+	public User findUserByStudentId(String studentId) 
+	{
+		User user = usersByStudentId.get(studentId);
+		if (user == null)
+		{
+			LOG.logError("User with student ID "+ studentId +" cannot be found!");
 		}
-
 		return user;
 	}
 }
