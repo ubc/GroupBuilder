@@ -437,8 +437,11 @@ public class SearchUtil
 		for (Map.Entry<Id, Score> entry : cmIdMatches.entrySet())
 		{
 			CourseMembership member = courseMemberships.get(entry.getKey());
-			User user = users.get(member.getUserId());
-			ret.add(new UserWrapper(member, user));
+			if (member.getIsAvailable())
+			{
+				User user = users.get(member.getUserId());
+				ret.add(new UserWrapper(member, user));
+			}
 		}
 		
 		return ret;
@@ -460,7 +463,7 @@ public class SearchUtil
 		{
 			CourseMembership member = entry.getValue();
 			User user = users.get(member.getUserId());
-			if (member.getRole().equals(CourseMembership.Role.STUDENT))
+			if (member.getIsAvailable() && member.getRole().equals(CourseMembership.Role.STUDENT))
 			{
 				ret.add(new UserWrapper(member, user));
 			}
