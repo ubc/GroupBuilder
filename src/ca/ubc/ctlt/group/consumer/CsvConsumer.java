@@ -30,7 +30,7 @@ public class CsvConsumer extends Consumer {
 
 		// process the data
 		List<String[]> data = new ArrayList<String[]>();
-		String[] header = { "Group", "Username", "Student ID", "GroupSet" };
+		String[] header = { "Group", "Name", "Username", "Student ID", "GroupSet" };
 		data.add(header);
 
 		for (Entry<String, GroupSet> entryGroupSet : sets.entrySet()) {
@@ -44,7 +44,7 @@ public class CsvConsumer extends Consumer {
 				for (Entry<String, GroUser> entryMember : group.getMemberList()
 						.entrySet()) {
 					GroUser user = entryMember.getValue();
-					String[] row = { group.getName(), user.getUserName(),
+					String[] row = { group.getName(), user.getName(), user.getUserName(),
 							user.getStudentID(), setName };
 					data.add(row);
 				}
