@@ -5,7 +5,7 @@
         <name value= "GroupBuilder"/>
         <handle value= "GroupBuilder"/>
         <description value= "Group import/export/creation tool."/>
-        <version value= "1.0.1"/>
+        <version value= "1.0.2"/>
         <requires>
             <bbversion value="9.1"/>
         </requires>
@@ -15,16 +15,16 @@
             <url value="http://www.ubc.ca/" />
             <description value="Group import/export/creation tool." />
         </vendor>
-        
-<!--    These two JSPs are displayed when the "remove" and "properties" buttons --> 
+
+<!--    These two JSPs are displayed when the "remove" and "properties" buttons -->
 <!--	are pressed on the Building Blocks administration page. 				-->
 <!--    <http-actions>
             <config value="admin/configure.jsp"/>
             <remove value="admin/remove.jsp"/>
         </http-actions>
- -->    
+ -->
         <application-defs>
-            <application handle="GroupBuilder" type="course" use-ssl="false" 
+            <application handle="GroupBuilder" type="course" use-ssl="false"
             	name="GroupBuilder" can-allow-guest="false">
                 <description lang="en_US">Group import/export/creation tool.</description>
                 <links>
