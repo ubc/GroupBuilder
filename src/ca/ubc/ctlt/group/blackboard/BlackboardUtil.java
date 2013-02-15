@@ -132,6 +132,7 @@ public class BlackboardUtil
 				}
 				
 				if (!added) {
+					LOG.logDebug("Could not match a group with its Group Set!");
 					throw new MissingResourceException("Group " + g.getName() + " could not find group set!", "GroupSet", g.getName());
 				}
 			}
@@ -176,9 +177,10 @@ public class BlackboardUtil
 		}
 		
 		for (Group s : bbGroupSets) {
+			String setId = s.getId().toExternalString();
 			GroupSet set = new GroupSet(s.getTitle());
-			set.setId(s.getId().toExternalString());
-			sets.put(s.getTitle(), set);
+			set.setId(setId);
+			sets.put(setId, set);
 		}
 	
 		return sets;
