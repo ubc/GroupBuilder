@@ -20,6 +20,11 @@
       <servlet-name>process</servlet-name>
       <servlet-class>ca.ubc.ctlt.group.servlet.ProcessServlet</servlet-class>
     </servlet>
+
+	<servlet>
+		<servlet-name>ajax</servlet-name>
+		<servlet-class>ca.ubc.ctlt.group.servlet.AjaxServlet</servlet-class>
+	</servlet>
     
 	<!-- Map servlets to urls, note that JSP files not in WEB-INF gets 
 	automatically compiled with it's own servlet, and so can unknowingly
@@ -40,4 +45,8 @@
       <url-pattern>/process</url-pattern>
     </servlet-mapping>
     
+    <servlet-mapping>
+      <servlet-name>ajax</servlet-name>
+      <url-pattern>/ajax/*</url-pattern>
+    </servlet-mapping>
 </web-app>

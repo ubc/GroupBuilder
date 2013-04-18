@@ -237,7 +237,7 @@
 		// need to add course_id for BBL to know where it is 
 		params.course_id = '<%=ctx.getCourseId().toExternalString() %>';
 		new Ajax.Updater('userlists',
-				'providers/groupcreator/userslist.jsp',
+				'ajax/groupcreator/userslist.jsp',
 				{
 					parameters : params,
 					// enable js evaluation of the response or the 'select all' checkbox for inventoryList won't work 

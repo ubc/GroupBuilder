@@ -73,7 +73,7 @@ function bbConsumerShowUsersList()
 {
 	// need to add course_id for BBL to know where it is 
 	new Ajax.Updater('bbConsumerGroupView',
-			'consumers/blackboard/groupview.jsp',
+			'ajax/blackboard/groupview.jsp',
 			{
 				parameters : {
 					'blackboardConsumerOperation': $F('blackboardConsumerOperation'), 
