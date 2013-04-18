@@ -31,7 +31,7 @@
                     <link>
                         <type value="course_tool"/>
                         <name value="GroupBuilder"/>
-                        <url value="index.jsp" />
+                        <url value="" />
                         <description value="GroupBuilder" />
                     </link>
                 </links>

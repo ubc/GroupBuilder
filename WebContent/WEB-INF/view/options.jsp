@@ -20,27 +20,8 @@
 }
 </style>
 <![endif]-->
-	
-	<%
-	Manager manager = new Manager(request, response);
-/* 	Class p = Class.forName(request.getParameter("provider"));
-	Provider provider = (Provider)p.newInstance();
-	Class c = Class.forName(request.getParameter("consumer"));
-	Consumer consumer  = (Consumer)c.newInstance();
-	provider.setRequest(request);
-	provider.setResponse(response);
-	consumer.setRequest(request);
-	consumer.setResponse(response); */
-	pageContext.setAttribute("provider", manager.getProvider(), pageContext.REQUEST_SCOPE);
-	pageContext.setAttribute("consumer", manager.getConsumer(), pageContext.REQUEST_SCOPE);
-	pageContext.setAttribute("enctype", "application/x-www-form-urlencoded");
-	if (manager.getProvider().hasFileUpload())
-	{
-		pageContext.setAttribute("enctype", "multipart/form-data");
-	}
-	%>
 
-	<bbNG:form action="process.jsp" method="post" onSubmit="return validateForm();" enctype="${enctype}">
+	<bbNG:form action="process" method="post" onSubmit="return validateForm();" enctype="${enctype}">
 		<bbNG:dataCollection>
 		
 			<bbNG:step title="Group Source - ${provider.description}">
@@ -53,7 +34,7 @@
 			
 			<input type="hidden" name="provider" value="${provider.class.name}" />
 			<input type="hidden" name="consumer" value="${consumer.class.name}" />
-			<input type="hidden" name="course_id" value=<%=request.getParameter("course_id")%> />
+			<input type="hidden" name="course_id" value="${courseId}"> />
 			
 			<bbNG:stepSubmit/>
 		

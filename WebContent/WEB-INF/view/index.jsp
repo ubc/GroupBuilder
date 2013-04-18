@@ -3,6 +3,8 @@
 	pageEncoding="UTF-8"
 	import="ca.ubc.ctlt.group.*,java.util.*,blackboard.platform.*,blackboard.data.user.*,blackboard.persist.*,blackboard.persist.user.*,blackboard.data.course.*,blackboard.persist.course.*,blackboard.data.content.*,blackboard.base.*"%>
 
+<!--  import="ca.ubc.ctlt.group.*,java.util.*,blackboard.platform.*,blackboard.data.user.*,blackboard.persist.*,blackboard.persist.user.*,blackboard.data.course.*,blackboard.persist.course.*,blackboard.data.content.*,blackboard.base.*"%> -->
+
 <!-- Tag libraries -->
 <%@ taglib prefix="bbNG" uri="/bbNG"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -73,27 +75,6 @@ select
 	</a>
 </li>
 </ul>
-	
-<%
-Manager manager =  new Manager();
-
-ArrayList<Provider> providers = new ArrayList<Provider>();
-ArrayList<Consumer> consumers = new ArrayList<Consumer>();
-
-for (Class<Provider> p : manager.getProviders())
-{
-	providers.add(p.newInstance());
-}
-
-for (Class<Consumer> c : manager.getConsumers())
-{
-	consumers.add(c.newInstance());
-}
-
-pageContext.setAttribute("providers", providers);
-pageContext.setAttribute("consumers", consumers);
-
-%>
 
 <p id="advancedOptionsToggle"><a href="#" onclick="$('advancedOptions').toggle(); return false;">Advanced Configuration</a></p>
 <div id="advancedOptions">
@@ -107,7 +88,7 @@ output.
 </p>
 <p>E.g.: The Blackboard provider provides a list of existing groups stored in Blackboard Learn.</p>
 <p>E.g.: The CSV consumer takes the list of groups and writes it out as a CSV file to be downloaded.</p>
-<bbNG:form action="options.jsp" method="post">
+<bbNG:form action="options" method="post">
 <bbNG:dataCollection>
 	<bbNG:step title="Group Source - Where group information is read or specified">
 		<select name="provider" id="providersList" onchange="toggleDescriptions();">
@@ -133,7 +114,7 @@ output.
 			</c:forEach>
 		</div>
 	</bbNG:step>
-	<input type="hidden" name="course_id" value=<%=request.getParameter("course_id")%> />
+	<input type="hidden" name="course_id" value="${courseId}" />
 	<bbNG:stepSubmit/>
 </bbNG:dataCollection>
 </bbNG:form>

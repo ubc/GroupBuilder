@@ -6,6 +6,7 @@
 <%@taglib prefix="bbNG" uri="/bbNG"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<!--  Would be nice to use bbNG:learningSystemPage instead, but for some reason, it's now broken if the user uploads a file -->
 <bbNG:learningSystemPage ctxId="ctx">
 	<bbNG:pageHeader instructions="Result">
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
@@ -39,12 +40,6 @@
 }
 </style>
 <![endif]-->
-<%
-Manager manager = new Manager(request, response);
-manager.process();
-pageContext.setAttribute("manager", manager);
-pageContext.setAttribute("errors", manager.getErrors());
-%>
 		
 <c:choose>
     <c:when test="${empty errors}">

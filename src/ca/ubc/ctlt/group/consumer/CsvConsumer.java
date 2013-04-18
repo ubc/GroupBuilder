@@ -91,7 +91,7 @@ public class CsvConsumer extends Consumer {
 			csCtx.createFile(path, fileName, input, true);
 		} catch (CSFileSystemException e) {
 			// Couldn't create the file for some reason
-			error("Couldn't creat the file, did you select a directory?");
+			error("Couldn't create the file, did you select a directory?");
 			error(e.getMessage());
 		}
 	}

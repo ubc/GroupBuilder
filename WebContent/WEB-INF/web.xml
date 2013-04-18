@@ -1,17 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
-  <display-name>Basic Building Block</display-name>
-  <filter>
-		<filter-name>UploadMultipartFilter</filter-name>
-		<filter-class>ca.ubc.ctlt.group.UploadMultipartFilter</filter-class>
-  </filter>
-  
-  <filter-mapping>
-		<filter-name>UploadMultipartFilter</filter-name>
-		 <url-pattern>*.jsp</url-pattern>
-   </filter-mapping>
-  
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<display-name>Basic Building Block</display-name>
+	
+	<!-- Servlets -->
+    <servlet>
+      <servlet-name>index</servlet-name>
+      <servlet-class>ca.ubc.ctlt.group.servlet.IndexServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+      <servlet-name>options</servlet-name>
+      <servlet-class>ca.ubc.ctlt.group.servlet.OptionsServlet</servlet-class>
+    </servlet>
+    
+    <servlet>
+      <servlet-name>process</servlet-name>
+      <servlet-class>ca.ubc.ctlt.group.servlet.ProcessServlet</servlet-class>
+    </servlet>
+    
+	<!-- Map servlets to urls, note that JSP files not in WEB-INF gets 
+	automatically compiled with it's own servlet, and so can unknowingly
+	override the servlet mappings here. I've moved the JSP files into
+	WEB-INF/view to disable this. -->
+    <servlet-mapping>
+      <servlet-name>index</servlet-name>
+      <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+      <servlet-name>options</servlet-name>
+      <url-pattern>/options</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+      <servlet-name>process</servlet-name>
+      <url-pattern>/process</url-pattern>
+    </servlet-mapping>
+    
 </web-app>
