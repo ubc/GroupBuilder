@@ -11,6 +11,12 @@
 		<bbNG:pageTitleBar iconUrl="" showIcon="false" showTitleBar="true" 
 		title="GroupBuilder"/>
 	</bbNG:pageHeader>
+<style>
+.container
+{
+	background: white; /* IE Background RGB Bug Fix */
+}
+</style>
 <!--[if (lt IE 9)]>
 <style type="text/css">
 /* IE8 CSS hacks */
@@ -34,7 +40,7 @@
 			
 			<input type="hidden" name="provider" value="${provider.class.name}" />
 			<input type="hidden" name="consumer" value="${consumer.class.name}" />
-			<input type="hidden" name="course_id" value="${courseId}"> />
+			<input type="hidden" name="course_id" value="${courseId}" />
 			
 			<bbNG:stepSubmit/>
 		

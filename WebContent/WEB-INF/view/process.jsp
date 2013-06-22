@@ -14,6 +14,10 @@
 	</bbNG:pageHeader>
 	
 <style>
+.container
+{
+	background: white; /* IE Background RGB Bug Fix */
+}
 .GroupManagerSuccess
 {
 	color: green;

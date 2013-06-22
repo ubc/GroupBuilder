@@ -17,6 +17,10 @@
 	</bbNG:pageHeader>
 	
 <style type="text/css">
+.container
+{
+	background: white; /* IE Background RGB Bug Fix */
+}
 #shortcuts
 {
 	margin-bottom: 7em;
