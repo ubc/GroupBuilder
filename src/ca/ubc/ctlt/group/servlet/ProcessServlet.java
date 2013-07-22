@@ -19,13 +19,16 @@ public class ProcessServlet extends HttpServlet
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		// Special processing for file uploads. File uploads are marked as a multipart request.
+		// Note that we must preserve the original request object for use cause the UploadMultipartRequestWrapper only wraps
+		// Blackboard's MultipartRequest object and not the actual HttpServletRequest that we passed to it.
+		HttpServletRequest reqparam = request;
 		if (request.getHeader("content-type") != null && 
 			request.getHeader("content-type").indexOf("multipart/form-data") != -1)
 		{
-			request = new UploadMultipartRequestWrapper(request);
+			reqparam = new UploadMultipartRequestWrapper(request);
 		}
 		
-		Manager manager = new Manager(request, response);
+		Manager manager = new Manager(reqparam, response);
 		manager.process();
 		request.setAttribute("manager", manager);
 		request.setAttribute("errors", manager.getErrors());

@@ -196,6 +196,6 @@ function shortcut(type)
 </script>
 </bbNG:jsBlock>
 
-<p id="tinyfootnote">GroupBuilder v1.0.3: Open source project, available on <a href="https://github.com/ubc/GroupBuilder" target="_blank">Github</a>.<br/> Special thanks to Bob Walker.</p>
+<p id="tinyfootnote">GroupBuilder v1.0.4: Open source project, available on <a href="https://github.com/ubc/GroupBuilder" target="_blank">Github</a>.<br/> Special thanks to Bob Walker.</p>
 
 </bbNG:learningSystemPage>
