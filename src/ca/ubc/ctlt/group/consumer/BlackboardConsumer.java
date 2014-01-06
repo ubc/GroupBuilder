@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import blackboard.base.FormattedText;
 import blackboard.data.ValidationException;
 import blackboard.data.course.CourseMembership;
 import blackboard.data.course.Group;
@@ -227,6 +228,10 @@ public class BlackboardConsumer extends Consumer {
 		// create the group
 		Group bbGroup = new Group();
 		bbGroup.setTitle(group.getName());
+		// Need to provide an empty string for group description
+		// The default desc is a null which causes BBL to throw an exception with the new group tool
+		FormattedText text = new FormattedText();
+		bbGroup.setDescription(text);
 		bbGroup.setCourseId(groupSet.getCourseId());
 		bbGroup.setSetId(groupSet.getId());
 		groupDbPersister.persist(bbGroup);
