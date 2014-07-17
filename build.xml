@@ -50,7 +50,7 @@
 
     <target name="deploy" depends="dist">
         <taskdef name="b2deploy" classpath="${basedir}/lib/b2deploy-task.jar" classname="org.oscelot.ant.B2DeployTask" />
-        <b2deploy localfilepath="${dist}/${b2.package.name}.war" host="192.168.56.101" courseorgavailable="true" clean="true" />
+        <b2deploy localfilepath="${dist}/${b2.package.name}.war" host="bblvm:8443" courseorgavailable="true" clean="true" />
     </target>
 
     <target name="dist" depends="compile">

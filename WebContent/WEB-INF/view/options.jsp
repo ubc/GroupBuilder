@@ -37,8 +37,8 @@
 				<jsp:include page="${consumer.optionsPage}" flush="true" />
 			</bbNG:step>
 			
-			<input type="hidden" name="provider" value="${provider.class.name}" />
-			<input type="hidden" name="consumer" value="${consumer.class.name}" />
+			<input type="hidden" name="provider" value="${provider.className}" />
+			<input type="hidden" name="consumer" value="${consumer.className}" />
 			<input type="hidden" name="course_id" value="${courseId}" />
 			
 			<bbNG:stepSubmit/>

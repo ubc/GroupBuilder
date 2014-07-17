@@ -2,8 +2,10 @@ package ca.ubc.ctlt.group;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -30,8 +32,14 @@ public class UploadMultipartRequestWrapper extends HttpServletRequestWrapper{
 	}
 
 	@Override
-	public Map<String, List<String>> getParameterMap() {
-		return mReq.getParameterMap();
+	public Map<String, String[]> getParameterMap() {
+		Map<String, List<String>> paramMap = mReq.getParameterMap();
+		Map<String, String[]> ret = new HashMap<String, String[]>();
+		for (Entry<String, List<String>> entry : paramMap.entrySet()) {
+			String[] values = entry.getValue().toArray(new String[0]);
+			ret.put(entry.getKey(), values);
+		}
+		return ret;
 	}
 
 	@Override

@@ -94,24 +94,24 @@ output.
 	<bbNG:step title="Group Source - Where group information is read or specified">
 		<select name="provider" id="providersList" onchange="toggleDescriptions();">
 			<c:forEach var="p" items="${providers}">
-				<option value="${p.class.name}">${p.name}</option>
+				<option value="${p.className}">${p.name}</option>
 			</c:forEach>
 		</select>
 		<div id="providerDescriptions">
 			<c:forEach var="p" items="${providers}">
-				<p id="${p.class.name}_description">${p.description}</p>
+				<p id="${p.className}_description">${p.description}</p>
 			</c:forEach>
 		</div>
 	</bbNG:step>
 	<bbNG:step title="Group Destination - Process the group information from the previous step">
 		<select name="consumer" id="consumersList" onchange="toggleDescriptions();">
 			<c:forEach var="c" items="${consumers}">
-				<option value="${c.class.name}">${c.name}</option>
+				<option value="${c.className}">${c.name}</option>
 			</c:forEach>
 		</select>
 		<div id="consumerDescriptions">
 			<c:forEach var="c" items="${consumers}">
-				<p id="${c.class.name}_description">${c.description}</p>
+				<p id="${c.className}_description">${c.description}</p>
 			</c:forEach>
 		</div>
 	</bbNG:step>

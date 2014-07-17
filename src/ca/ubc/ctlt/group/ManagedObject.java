@@ -46,6 +46,10 @@ public abstract class ManagedObject {
 	public List<String> getErrors() {
 		return errors;
 	}
+	
+	public String getClassName() {
+		return this.getClass().getName();
+	}
 
 	public abstract String getOptionsPage();
 	
