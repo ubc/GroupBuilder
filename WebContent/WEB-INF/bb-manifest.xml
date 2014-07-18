@@ -5,7 +5,7 @@
         <name value= "GroupBuilder"/>
         <handle value= "GroupBuilder"/>
         <description value= "Group import/export/creation tool."/>
-        <version value= "1.0.5"/>
+        <version value= "1.1.0"/>
         <requires>
             <bbversion value="9.1"/>
         </requires>
@@ -51,6 +51,8 @@
             <permission type="attribute" name="user.personalinfo" actions="get,set"/>
             <permission type="persist" name="Group" actions="persist"/>
             <permission type="persist" name="GroupMembership " actions="persist"/>
+            <permission type="persist" name="tab " actions="create"/>
+            <permission type="persist" name="layoutfamily " actions="modify"/>
             <permission type="java.io.FilePermission" name="&amp;lt;&amp;lt;ALL FILES&amp;gt;&amp;gt;" actions="read,write,execute,delete"/>
         </permissions>
 
