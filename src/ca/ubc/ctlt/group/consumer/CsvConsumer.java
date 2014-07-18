@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.xythos.common.api.XythosException;
+
 import au.com.bytecode.opencsv.CSVWriter;
 import blackboard.cms.filesystem.CSContext;
 import blackboard.cms.filesystem.CSFileSystemException;
@@ -89,9 +91,14 @@ public class CsvConsumer extends Consumer {
 			String path = request.getParameter("csvExportCSFolder_CSFile");
 			CSContext csCtx = CSContext.getContext();
 			csCtx.createFile(path, fileName, input, true);
+			csCtx.commit();
 		} catch (CSFileSystemException e) {
 			// Couldn't create the file for some reason
 			error("Couldn't create the file, did you select a directory?");
+			error(e.getMessage());
+		} catch (XythosException e)
+		{ // commit failed, no clue what would cause this, documentation empty
+			error("Content system was unable to create the file.");
 			error(e.getMessage());
 		}
 	}
