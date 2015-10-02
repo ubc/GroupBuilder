@@ -7,3 +7,8 @@ docs/
 lib/servlet-api*
 lib/*.jar
 *.swp
+
+.gradle/
+.idea/
+gradle/
+out/
