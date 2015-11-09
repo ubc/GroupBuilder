@@ -67,7 +67,7 @@ public class BlackboardConsumer extends Consumer {
 		}
 		else
 		{
-			String url = "/webapps/blackboard/execute/groupInventoryList?course_id=" + courseId.getExternalString();
+			String url = "/webapps/bb-group-mgmt-LEARN/execute/groupContentList?course_id=" + courseId.getExternalString();
 			response.sendRedirect(url);
 		}
 		numGroups = 0;
